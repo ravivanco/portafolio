@@ -88,7 +88,7 @@ export const MissionSection: React.FC<MissionSectionProps> = ({
           <div className="flex items-center justify-between mb-4 relative z-10 font-mono text-xs">
             <div className="flex items-center space-x-2 bg-cyan-950/80 px-2.5 py-1 rounded border border-cyan-500/40 text-cyan-300">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              <span className="font-bold tracking-wider">LIVE FEED // IDENTITY CONFIRMED</span>
+              <span className="font-bold tracking-wider">SOFTWARE ENGINEER</span>
             </div>
             <span className="text-slate-500 text-[10px]">LOC: QUITO_EC</span>
           </div>
