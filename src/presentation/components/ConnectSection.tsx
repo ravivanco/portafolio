@@ -50,15 +50,32 @@ export const ConnectSection: React.FC<ConnectSectionProps> = ({ theme }) => {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     soundFx.playTransmit();
     setIsSubmitting(true);
-    setTimeout(() => {
+    
+    const formData = new FormData(e.currentTarget);
+    formData.append("Technologies", selectedTechs.join(", "));
+    formData.append("_captcha", "false"); // Disable recaptcha to keep the custom UI flow
+
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/rvivanco199@gmail.com", {
+        method: "POST",
+        body: formData,
+      });
+      
+      if (response.ok) {
+        setIsSuccess(true);
+        soundFx.playClick();
+      } else {
+        console.error("Form submission failed");
+      }
+    } catch (error) {
+      console.error("Error submitting form", error);
+    } finally {
       setIsSubmitting(false);
-      setIsSuccess(true);
-      soundFx.playClick();
-    }, 2000);
+    }
   };
 
   return (
@@ -224,13 +241,13 @@ export const ConnectSection: React.FC<ConnectSectionProps> = ({ theme }) => {
                         <label className={`text-xs font-bold block mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                           {t.connect.name_label}
                         </label>
-                        <input type="text" required placeholder={t.connect.name_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
+                        <input type="text" name="Name" required placeholder={t.connect.name_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
                       </div>
                       <div>
                         <label className={`text-xs font-bold block mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                           {t.connect.email_label}
                         </label>
-                        <input type="email" required placeholder={t.connect.email_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
+                        <input type="email" name="Email" required placeholder={t.connect.email_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
                       </div>
                     </div>
 
@@ -242,7 +259,7 @@ export const ConnectSection: React.FC<ConnectSectionProps> = ({ theme }) => {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Building className="w-4 h-4 text-slate-500" />
                         </div>
-                        <input type="text" placeholder={t.connect.company_placeholder} className={`w-full pl-10 pr-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
+                        <input type="text" name="Company" placeholder={t.connect.company_placeholder} className={`w-full pl-10 pr-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
                       </div>
                     </div>
 
@@ -250,7 +267,7 @@ export const ConnectSection: React.FC<ConnectSectionProps> = ({ theme }) => {
                       <label className={`text-xs font-bold block mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                         {t.connect.type_label}
                       </label>
-                      <select className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-500'}`}>
+                      <select name="Proposal Type" className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 appearance-none ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-cyan-500'}`}>
                         <option value="fulltime">{t.connect.type_fulltime}</option>
                         <option value="freelance">{t.connect.type_freelance}</option>
                         <option value="mobile">{t.connect.type_mobile}</option>
@@ -292,7 +309,7 @@ export const ConnectSection: React.FC<ConnectSectionProps> = ({ theme }) => {
                       <label className={`text-xs font-bold block mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                         {t.connect.details_label}
                       </label>
-                      <textarea required rows={4} placeholder={t.connect.details_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-none ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
+                      <textarea name="Details" required rows={4} placeholder={t.connect.details_placeholder} className={`w-full px-4 py-3 rounded-lg border text-sm transition-all focus:outline-none focus:ring-2 focus:ring-cyan-500/50 resize-none ${isDark ? 'bg-[#060911] border-slate-800 text-slate-200 placeholder-slate-600 focus:border-cyan-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400 focus:border-cyan-500'}`} />
                     </div>
 
                     <button
