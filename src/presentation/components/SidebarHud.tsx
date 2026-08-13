@@ -35,7 +35,7 @@ export const SidebarHud: React.FC<SidebarHudProps> = ({
     { id: 'mission', label: 'TERMINAL_BIO', icon: Terminal },
     { id: 'core_tech', label: 'NEURAL_NET', icon: Cpu },
     { id: 'projects', label: 'PROJECT_OS', icon: FolderGit2 },
-    { id: 'connect', label: 'PROPOSAL_UPLINK', icon: Send },
+    { id: 'connect', label: 'CONNECT', icon: Send },
   ];
 
   return (
