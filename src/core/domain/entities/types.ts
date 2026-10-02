@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-export type NavSection = 'mission' | 'core_tech' | 'projects' | 'connect';
+export type NavSection = 'mission' | 'path' | 'core_tech' | 'projects' | 'connect';
 
 export type Language = 'en' | 'es';
 

@@ -1,14 +1,13 @@
 import React from 'react';
 import { NavSection, ThemeMode } from '../../core/domain/entities/types';
-import { useResumeData } from '../hooks/useResumeData';
 import { soundFx } from '../../utils/sound';
 import { Terminal, Sun, Moon, Volume2, VolumeX, FileText } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../../utils/i18n';
+import { SECTION_ORDER, scrollToSection } from '../hooks/useLatent';
 
 interface HeaderProps {
   activeSection: NavSection;
-  setActiveSection: (sec: NavSection) => void;
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   terminalOpen: boolean;
@@ -18,9 +17,40 @@ interface HeaderProps {
   onOpenResume: () => void;
 }
 
+export const navLabel = (s: NavSection, nav: { about: string; path: string; tech: string; projects: string; connect: string }) =>
+  ({ mission: nav.about, path: nav.path, core_tech: nav.tech, projects: nav.projects, connect: nav.connect })[s];
+
+const iconBox =
+  'h-10 w-10 items-center justify-center border border-line text-muted transition-colors duration-200 hover:border-line-strong hover:text-ink';
+const iconBtn = `inline-flex ${iconBox}`;
+
+export const LanguageSwitch: React.FC = () => {
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language].ui;
+  return (
+    <div role="group" aria-label={t.lang_label} className="flex h-10 border border-line text-xs font-semibold">
+      {(['es', 'en'] as const).map((l) => (
+        <button
+          key={l}
+          type="button"
+          aria-pressed={language === l}
+          onClick={() => {
+            soundFx.playClick();
+            setLanguage(l);
+          }}
+          className={`w-9 uppercase transition-colors duration-200 ${
+            language === l ? 'bg-signal text-signal-ink font-semibold' : 'text-muted hover:text-ink'
+          }`}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 export const Header: React.FC<HeaderProps> = ({
   activeSection,
-  setActiveSection,
   theme,
   setTheme,
   terminalOpen,
@@ -29,197 +59,123 @@ export const Header: React.FC<HeaderProps> = ({
   setSoundEnabled,
   onOpenResume,
 }) => {
-  const { language, toggleLanguage } = useLanguage();
-  const t = translations[language].nav;
-  const { PERSONAL_INFO } = useResumeData();
-
-  const navItems: { id: NavSection; label: string }[] = [
-    { id: 'mission', label: t.mission },
-    { id: 'core_tech', label: t.core_tech },
-    { id: 'projects', label: t.projects },
-    { id: 'connect', label: t.connect },
-  ];
-
+  const { language } = useLanguage();
+  const t = translations[language];
   const isDark = theme === 'dark';
 
   return (
-    <header
-      id="main-header"
-      className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors duration-300 ${
-        isDark
-          ? 'bg-[#090d16]/90 border-[#1e293b] text-cyan-400'
-          : 'bg-slate-50/90 border-slate-200 text-slate-800'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand / Logo */}
-        <div className="flex items-center space-x-3">
-          <button
-            id="brand-logo-btn"
-            onClick={() => {
-              soundFx.playClick();
-              setActiveSection('mission');
-            }}
-            className="group flex items-center space-x-2 text-left focus:outline-none"
-          >
-            <div className={`w-8 h-8 rounded border flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 ${
-              isDark 
-                ? 'border-cyan-500 bg-cyan-950/50 text-cyan-300 group-hover:shadow-[0_0_12px_rgba(6,182,212,0.6)]' 
-                : 'border-slate-800 bg-slate-900 text-cyan-400 group-hover:bg-slate-800'
-            }`}>
-              RV
-            </div>
-            <div>
-              <span className={`font-mono font-bold tracking-wider text-sm sm:text-base block ${
-                isDark ? 'text-cyan-400 group-hover:text-cyan-300' : 'text-slate-900'
-              }`}>
-                {PERSONAL_INFO.shortName.replace(' ', '_')}
-              </span>
-              <div className="flex items-center space-x-1.5 text-[10px] font-mono text-emerald-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="tracking-widest uppercase">{t.sys_operational}</span>
-              </div>
-            </div>
-          </button>
-        </div>
+    <header id="main-header" className="sticky top-0 z-40 w-full border-b border-line bg-ground">
+      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between gap-3 px-4 sm:px-6 lg:pl-24 lg:pr-8">
+        <button
+          id="brand-logo-btn"
+          type="button"
+          onClick={() => {
+            soundFx.playClick();
+            scrollToSection('mission');
+          }}
+          className="group flex min-w-0 items-center gap-3 text-left"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-signal font-display text-[11px] font-bold text-signal">
+            RV
+          </span>
+          <span className="hidden min-w-0 flex-col leading-tight sm:flex">
+            <span className="truncate font-mono text-[13px] font-semibold tracking-wider text-ink">RICHARD_VIVANCO</span>
+            <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-ok">
+              <span className="pulse-dot h-1.5 w-1.5 bg-ok" />
+              {t.nav.sys_operational}
+            </span>
+          </span>
+        </button>
 
-        {/* Center Nav Links */}
-        <nav id="header-nav" className="hidden md:flex items-center space-x-1 lg:space-x-2 font-mono text-xs">
-          {navItems.map((item) => {
-            const isActive = activeSection === item.id;
+        <nav aria-label="Primary" className="hidden items-center gap-1 text-[13px] font-medium lg:flex">
+          {SECTION_ORDER.map((id) => {
+            const active = activeSection === id;
             return (
-              <button
-                key={item.id}
-                id={`nav-link-${item.id}`}
-                onClick={() => {
+              <a
+                key={id}
+                href={`#section-${id.replace('_', '-')}`}
+                aria-current={active ? 'true' : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
                   soundFx.playClick();
-                  setActiveSection(item.id);
+                  scrollToSection(id);
                 }}
                 onMouseEnter={() => soundFx.playHover()}
-                className={`px-3 py-1.5 rounded transition-all duration-200 font-semibold tracking-wider relative ${
-                  isActive
-                    ? isDark
-                      ? 'text-cyan-300 bg-cyan-950/60 border border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.25)]'
-                      : 'text-cyan-900 bg-cyan-100 border border-cyan-400 shadow-sm'
-                    : isDark
-                      ? 'text-slate-400 hover:text-cyan-300 hover:bg-slate-800/60'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
+                className={`relative px-3 py-2 tracking-[0.06em] no-underline transition-colors duration-200 ${
+                  active ? 'text-signal' : 'text-muted hover:text-ink'
                 }`}
               >
-                {item.label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-cyan-400 rounded-full" />
-                )}
-              </button>
+                {navLabel(id, t.ui.nav)}
+                <span
+                  className={`absolute inset-x-3 -bottom-[13px] h-px bg-signal transition-transform duration-500 ease-out-expo ${
+                    active ? 'scale-x-100' : 'scale-x-0'
+                  }`}
+                />
+              </a>
             );
           })}
         </nav>
 
-        {/* Action Controls */}
-        <div className="flex items-center space-x-2">
-          {/* CLI Terminal Toggle */}
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <LanguageSwitch />
+
           <button
             id="toggle-terminal-btn"
+            type="button"
+            aria-label={t.ui.open_terminal}
+            aria-expanded={terminalOpen}
             onClick={() => {
               soundFx.playClick();
               setTerminalOpen(!terminalOpen);
             }}
-            onMouseEnter={() => soundFx.playHover()}
-            title="Toggle Interactive CLI Terminal"
-            className={`p-2 rounded border transition-all duration-200 text-xs font-mono flex items-center space-x-1.5 ${
-              terminalOpen
-                ? 'bg-fuchsia-950/70 border-fuchsia-500 text-fuchsia-300 shadow-[0_0_10px_rgba(217,70,239,0.3)]'
-                : isDark
-                  ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:border-cyan-500 hover:text-cyan-300'
-                  : 'bg-white border-slate-300 text-slate-700 hover:border-slate-800'
-            }`}
+            className={`${iconBtn} ${terminalOpen ? '!border-signal !text-signal' : ''}`}
           >
-            <Terminal className="w-4 h-4" />
-            <span className="hidden sm:inline">CLI</span>
+            <Terminal className="h-4 w-4" />
           </button>
 
-          {/* Theme Switcher */}
           <button
             id="toggle-theme-btn"
+            type="button"
+            aria-label={t.ui.theme_toggle}
             onClick={() => {
               soundFx.playClick();
               setTheme(isDark ? 'light' : 'dark');
             }}
-            onMouseEnter={() => soundFx.playHover()}
-            title={`Switch to ${isDark ? 'Light HUD' : 'Dark Cyber'} mode`}
-            className={`p-2 rounded border transition-all duration-200 ${
-              isDark
-                ? 'bg-slate-900/80 border-slate-700 text-amber-400 hover:border-amber-400'
-                : 'bg-white border-slate-300 text-indigo-600 hover:border-indigo-600'
-            }`}
+            className={iconBtn}
           >
-            {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
-          {/* Sound Toggle */}
           <button
             id="toggle-sound-btn"
+            type="button"
+            aria-label={t.ui.sound_toggle}
+            aria-pressed={soundEnabled}
             onClick={() => {
               const next = !soundEnabled;
               setSoundEnabled(next);
               soundFx.setEnabled(next);
               if (next) soundFx.playClick();
             }}
-            onMouseEnter={() => soundFx.playHover()}
-            title={soundEnabled ? 'Disable Audio FX' : 'Enable Audio FX'}
-            className={`p-2 rounded border transition-all duration-200 hidden sm:flex ${
-              soundEnabled
-                ? 'bg-cyan-950/60 border-cyan-500/60 text-cyan-400'
-                : isDark
-                  ? 'bg-slate-900/80 border-slate-800 text-slate-500'
-                  : 'bg-slate-100 border-slate-300 text-slate-400'
-            }`}
+            className={`${iconBox} hidden md:inline-flex`}
           >
-            {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
           </button>
 
-          {/* Resume PDF button */}
           <button
             id="resume-modal-btn"
+            type="button"
+            aria-label={t.ui.open_resume}
             onClick={() => {
               soundFx.playClick();
               onOpenResume();
             }}
-            onMouseEnter={() => soundFx.playHover()}
-            className="px-3 py-1.5 rounded border border-cyan-500 bg-cyan-500/10 hover:bg-cyan-500 hover:text-black text-cyan-400 font-mono text-xs font-bold transition-all duration-200 shadow-[0_0_10px_rgba(6,182,212,0.2)] flex items-center space-x-1.5"
+            className="inline-flex h-10 items-center gap-2 bg-signal px-3 text-sm font-semibold text-signal-ink transition-opacity duration-200 hover:opacity-85"
           >
-            <FileText className="w-3.5 h-3.5" />
-            <span>{t.resume}</span>
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline">{t.nav.resume}</span>
           </button>
         </div>
-      </div>
-
-      {/* Mobile Nav Subbar */}
-      <div className="md:hidden flex items-center justify-around border-t border-slate-800/50 py-2 px-2 font-mono text-[11px] overflow-x-auto">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            id={`mobile-nav-${item.id}`}
-            onClick={() => {
-              soundFx.playClick();
-              setActiveSection(item.id);
-            }}
-            className={`px-2.5 py-1 rounded whitespace-nowrap font-medium ${
-              activeSection === item.id
-                ? isDark
-                  ? 'bg-cyan-950 text-cyan-300 border border-cyan-500/50'
-                  : 'bg-cyan-100 text-cyan-900 border border-cyan-400'
-                : isDark
-                  ? 'text-slate-400'
-                  : 'text-slate-600'
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
       </div>
     </header>
   );

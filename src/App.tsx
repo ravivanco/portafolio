@@ -1,123 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import { NavSection, ThemeMode } from './core/domain/entities/types';
+import React, { useCallback, useEffect, useState } from 'react';
+import { MotionConfig } from 'motion/react';
+import { ThemeMode } from './core/domain/entities/types';
 import { Header } from './presentation/components/Header';
 import { SidebarHud } from './presentation/components/SidebarHud';
+import { MobileDock } from './presentation/components/MobileDock';
 import { MissionSection } from './presentation/components/MissionSection';
+import { PathSection } from './presentation/components/PathSection';
 import { CoreTechSection } from './presentation/components/CoreTechSection';
 import { ProjectsSection } from './presentation/components/ProjectsSection';
 import { ConnectSection } from './presentation/components/ConnectSection';
 import { TerminalDrawer } from './presentation/components/TerminalDrawer';
 import { ResumeModal } from './presentation/components/ResumeModal';
 import { Footer } from './presentation/components/Footer';
-import { motion, AnimatePresence } from 'motion/react';
+import { LatentCanvas } from './presentation/components/LatentCanvas';
+import { useActiveSection, useRevealObserver } from './presentation/hooks/useLatent';
+import { useLanguage } from './presentation/context/LanguageContext';
+import { translations } from './utils/i18n';
+
+const initialTheme = (): ThemeMode => {
+  const attr = document.documentElement.getAttribute('data-theme');
+  return attr === 'light' ? 'light' : 'dark';
+};
 
 export default function App() {
-  const [activeSection, setActiveSection] = useState<NavSection>('mission');
-  const [theme, setTheme] = useState<ThemeMode>('dark');
+  const [theme, setTheme] = useState<ThemeMode>(initialTheme);
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [resumeOpen, setResumeOpen] = useState(false);
+  const [fieldOk, setFieldOk] = useState(true);
+  const { language } = useLanguage();
+  const activeSection = useActiveSection();
+  useRevealObserver([language]);
 
-  // Sync theme class to document html body
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.body.style.backgroundColor = '#070a12';
-      document.body.style.color = '#f8fafc';
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.style.backgroundColor = '#f8fafc';
-      document.body.style.color = '#0f172a';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#05070d' : '#eceef3');
+    try {
+      localStorage.setItem('rv-theme', theme);
+    } catch {
+      /* storage unavailable */
     }
   }, [theme]);
 
-  const isDark = theme === 'dark';
+  const onUnsupported = useCallback(() => setFieldOk(false), []);
+  const openResume = useCallback(() => setResumeOpen(true), []);
+  const closeResume = useCallback(() => setResumeOpen(false), []);
+  const closeTerminal = useCallback(() => setTerminalOpen(false), []);
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 ${
-      isDark ? 'bg-[#070a12] text-slate-100' : 'bg-slate-50 text-slate-900'
-    }`}>
-      {/* Background Cyber Grid Lines Effect */}
-      <div className={`fixed inset-0 pointer-events-none opacity-20 ${
-        isDark
-          ? 'bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem]'
-          : 'bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem]'
-      }`} />
+    <MotionConfig reducedMotion="user">
+      <div className="relative min-h-screen bg-ground text-ink">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-signal focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-signal-ink"
+        >
+          {translations[language].ui.skip}
+        </a>
 
-      {/* Main Header Navbar */}
-      <Header
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        theme={theme}
-        setTheme={setTheme}
-        terminalOpen={terminalOpen}
-        setTerminalOpen={setTerminalOpen}
-        soundEnabled={soundEnabled}
-        setSoundEnabled={setSoundEnabled}
-        onOpenResume={() => setResumeOpen(true)}
-      />
+        <div aria-hidden="true" className="hud-grid pointer-events-none fixed inset-0 z-0" />
+        {fieldOk && <LatentCanvas onUnsupported={onUnsupported} />}
 
-      {/* CLI Terminal Drawer */}
-      <TerminalDrawer
-        isOpen={terminalOpen}
-        onClose={() => setTerminalOpen(false)}
-        theme={theme}
-        setTheme={setTheme}
-        setActiveSection={setActiveSection}
-        onOpenResume={() => setResumeOpen(true)}
-      />
+        <Header
+          activeSection={activeSection}
+          theme={theme}
+          setTheme={setTheme}
+          terminalOpen={terminalOpen}
+          setTerminalOpen={setTerminalOpen}
+          soundEnabled={soundEnabled}
+          setSoundEnabled={setSoundEnabled}
+          onOpenResume={openResume}
+        />
 
-      {/* Left Sidebar HUD Navigation */}
-      <SidebarHud
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        theme={theme}
-      />
+        <TerminalDrawer
+          isOpen={terminalOpen}
+          onClose={closeTerminal}
+          theme={theme}
+          setTheme={setTheme}
+          onOpenResume={openResume}
+        />
 
-      {/* Main Layout Container */}
-      <main className="flex-1 lg:pl-16 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSection}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.3 }}
-            >
-              {activeSection === 'mission' && (
-                <MissionSection
-                  theme={theme}
-                  setActiveSection={setActiveSection}
-                  onOpenResume={() => setResumeOpen(true)}
-                />
-              )}
+        <SidebarHud activeSection={activeSection} />
 
-              {activeSection === 'core_tech' && (
-                <CoreTechSection theme={theme} />
-              )}
+        <main id="main" className="relative z-10 lg:pl-16">
+          <MissionSection fieldOk={fieldOk} onOpenResume={openResume} />
+          <PathSection />
+          <CoreTechSection theme={theme} />
+          <ProjectsSection theme={theme} />
+          <ConnectSection />
+        </main>
 
-              {activeSection === 'projects' && (
-                <ProjectsSection theme={theme} />
-              )}
+        <Footer />
+        <MobileDock activeSection={activeSection} />
 
-              {activeSection === 'connect' && (
-                <ConnectSection theme={theme} />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </main>
-
-      {/* Resume Viewer Modal */}
-      <ResumeModal
-        isOpen={resumeOpen}
-        onClose={() => setResumeOpen(false)}
-        theme={theme}
-      />
-
-      {/* Footer */}
-      <Footer theme={theme} />
-    </div>
+        <ResumeModal isOpen={resumeOpen} onClose={closeResume} />
+      </div>
+    </MotionConfig>
   );
 }

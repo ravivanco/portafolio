@@ -1,9 +1,9 @@
 import { Language, Project, Experience, TechCategory, Certification, BlogPost } from '../../core/domain/entities/types';
 
-import dkFittImg from '../../images/DK-Fitt.png';
-import nutriSportFittImg from '../../images/NutriSportFitt.png';
-import nexovoImg from '../../images/Nexovo.png';
-import prowessBikeImg from '../../images/ProwessBike.png';
+import dkFittImg from '../../images/DK-Fitt.webp';
+import nutriSportFittImg from '../../images/NutriSportFitt.webp';
+import nexovoImg from '../../images/Nexovo.webp';
+import prowessBikeImg from '../../images/ProwessBike.webp';
 
 export const getResumeData = (lang: Language) => {
   const isEs = lang === 'es';

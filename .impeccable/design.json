@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-02T12:00:00Z",
+  "title": "Design System: Richard Vivanco Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "ground": { "role": "neutral", "displayName": "Latent Ground", "canonical": "#05070d", "lightTheme": "#eceef3", "tonalRamp": ["oklch(15% 0.015 265)", "oklch(27% 0.015 265)", "oklch(39% 0.015 265)", "oklch(51% 0.015 265)", "oklch(63% 0.015 265)", "oklch(75% 0.015 265)", "oklch(85% 0.015 265)", "oklch(95% 0.015 265)"] },
+      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#0a0e18", "lightTheme": "#f6f7fa", "tonalRamp": ["oklch(15% 0.02 265)", "oklch(27% 0.02 265)", "oklch(39% 0.02 265)", "oklch(51% 0.02 265)", "oklch(63% 0.02 265)", "oklch(75% 0.02 265)", "oklch(85% 0.02 265)", "oklch(95% 0.02 265)"] },
+      "surface-2": { "role": "neutral", "displayName": "Surface 2", "canonical": "#0f1522", "lightTheme": "#e2e5ec", "tonalRamp": ["oklch(15% 0.025 262)", "oklch(27% 0.025 262)", "oklch(39% 0.025 262)", "oklch(51% 0.025 262)", "oklch(63% 0.025 262)", "oklch(75% 0.025 262)", "oklch(85% 0.025 262)", "oklch(95% 0.025 262)"] },
+      "ink": { "role": "neutral", "displayName": "Bone", "canonical": "#e9ecf2", "lightTheme": "#0b0f1a", "tonalRamp": ["oklch(15% 0.01 265)", "oklch(27% 0.01 265)", "oklch(39% 0.01 265)", "oklch(51% 0.01 265)", "oklch(63% 0.01 265)", "oklch(75% 0.01 265)", "oklch(85% 0.01 265)", "oklch(95% 0.01 265)"] },
+      "muted": { "role": "neutral", "displayName": "Muted", "canonical": "#9aa3b5", "lightTheme": "#4a5366", "tonalRamp": ["oklch(15% 0.025 265)", "oklch(27% 0.025 265)", "oklch(39% 0.025 265)", "oklch(51% 0.025 265)", "oklch(63% 0.025 265)", "oklch(75% 0.025 265)", "oklch(85% 0.025 265)", "oklch(95% 0.025 265)"] },
+      "faint": { "role": "neutral", "displayName": "Faint", "canonical": "#5d667a", "lightTheme": "#7a8396", "tonalRamp": ["oklch(15% 0.03 265)", "oklch(27% 0.03 265)", "oklch(39% 0.03 265)", "oklch(51% 0.03 265)", "oklch(63% 0.03 265)", "oklch(75% 0.03 265)", "oklch(85% 0.03 265)", "oklch(95% 0.03 265)"] },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "rgb(233 236 242 / 0.11)", "lightTheme": "rgb(11 15 26 / 0.12)" },
+      "line-strong": { "role": "neutral", "displayName": "Hairline Strong", "canonical": "rgb(233 236 242 / 0.22)", "lightTheme": "rgb(11 15 26 / 0.26)" },
+      "signal": { "role": "primary", "displayName": "Phosphor Signal", "canonical": "#3ee6ff", "lightTheme": "#006a82", "fieldRgb": "62 230 255", "tonalRamp": ["oklch(15% 0.06 208)", "oklch(27% 0.09 208)", "oklch(39% 0.11 208)", "oklch(51% 0.13 208)", "oklch(63% 0.14 208)", "oklch(75% 0.15 208)", "oklch(85% 0.15 208)", "oklch(95% 0.06 208)"] },
+      "signal-ink": { "role": "primary", "displayName": "Signal Ink", "canonical": "#021016", "lightTheme": "#ffffff" },
+      "dream": { "role": "secondary", "displayName": "Latent Magenta", "canonical": "#ff4fd8", "lightTheme": "#a3108f", "fieldRgb": "255 79 216", "tonalRamp": ["oklch(15% 0.08 337)", "oklch(27% 0.13 337)", "oklch(39% 0.18 337)", "oklch(51% 0.22 337)", "oklch(63% 0.25 337)", "oklch(72% 0.26 337)", "oklch(85% 0.14 337)", "oklch(95% 0.05 337)"] },
+      "ok": { "role": "tertiary", "displayName": "System Green", "canonical": "#4dffa6", "lightTheme": "#0a7d4a", "tonalRamp": ["oklch(15% 0.05 158)", "oklch(27% 0.08 158)", "oklch(39% 0.11 158)", "oklch(51% 0.14 158)", "oklch(63% 0.17 158)", "oklch(75% 0.19 158)", "oklch(88% 0.19 158)", "oklch(95% 0.08 158)"] },
+      "warn": { "role": "tertiary", "displayName": "Amber", "canonical": "#ffb547", "lightTheme": "#9a5b00", "tonalRamp": ["oklch(15% 0.04 70)", "oklch(27% 0.07 70)", "oklch(39% 0.1 70)", "oklch(51% 0.12 70)", "oklch(63% 0.14 70)", "oklch(75% 0.15 70)", "oklch(83% 0.15 70)", "oklch(95% 0.05 70)"] },
+      "danger": { "role": "tertiary", "displayName": "Alarm Rose", "canonical": "#ff6b7a", "lightTheme": "#b4233a", "tonalRamp": ["oklch(15% 0.05 15)", "oklch(27% 0.09 15)", "oklch(39% 0.13 15)", "oklch(51% 0.16 15)", "oklch(63% 0.18 15)", "oklch(71% 0.18 15)", "oklch(85% 0.09 15)", "oklch(95% 0.03 15)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero name only; uppercase, second line in signal." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles; uppercase; resolve from glyph noise via DenoiseText." },
+      "title": { "displayName": "Title", "purpose": "Project titles (1.25-2.25rem), AI block title, success title, scanner kcal figure; uppercase." },
+      "body": { "displayName": "Body", "purpose": "Prose in Geist, max 46-65ch." },
+      "ui": { "displayName": "UI", "purpose": "Buttons, actions, tabs in Geist 600." },
+      "label": { "displayName": "Label", "purpose": "Field labels, sub-headings, nav links (13px, 0.06em), dock labels (11px)." },
+      "data": { "displayName": "Data", "purpose": "JetBrains Mono for dates, tech-stack tokens joined with '  /  ', numeric readouts, scanner results, status lines, CLI prompt (12-13px)." },
+      "readout": { "displayName": "Readout", "purpose": "Stage corner readouts: formation name and step counter, uppercase." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The system's one easing: reveals, nav underlines, shard tilt, modal entry." },
+      { "name": "reveal", "value": "opacity 900ms, transform 1100ms, filter 900ms; from blur(10px) perspective(900px) translate3d(0,28px,-60px) rotateX(10deg); stagger calc(var(--d) * 70ms)", "purpose": "Content surfacing out of latent space." },
+      { "name": "reveal-shard", "value": "from perspective(1100px) translate3d(0,48px,-140px) rotateX(22deg) rotateZ(-1.5deg)", "purpose": "Deeper entry for project rows." },
+      { "name": "shard-tilt", "value": "perspective(1100px) rotateX/rotateY up to 6-7deg, 600ms", "purpose": "Project frame leans toward a fine pointer only." },
+      { "name": "denoise-text", "value": "900ms glyph scramble resolving left to right, triggered at 60% visibility", "purpose": "Section headings resolve like a sampler stepping t=1 to t=0." },
+      { "name": "latent-morph", "value": "scroll-linked interpolation between formations; noise peaks mid-transition (sin(pi*t)^1.15) and tints points toward dream; 2600ms intro denoise", "purpose": "The signature: scrolling is sampling." },
+      { "name": "state-transition", "value": "200ms color/opacity", "purpose": "Hover and pressed state changes on controls." },
+      { "name": "underline-scale", "value": "scale-x 500ms ease-out-expo", "purpose": "Active nav and dock indicators." },
+      { "name": "caret-blink", "value": "1.05s steps(1) infinite", "purpose": "CLI prompt caret." },
+      { "name": "pulse-dot", "value": "2.4s ease-in-out infinite, opacity 1 to 0.35", "purpose": "Live status dots." },
+      { "name": "reduced-motion", "value": "all animation/transition ~0ms; reveals static; field shows final formations; DenoiseText renders resolved; tilt off", "purpose": "Everything resolves in place." }
+    ],
+    "breakpoints": [
+      { "name": "min-400", "value": "400px" },
+      { "name": "min-420", "value": "420px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Signal-filled square action; one per region (Send proposal, Resume, Submit).",
+      "html": "<button class=\"ds-btn-primary\">Send proposal <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"ds-arrow\"><path d=\"m7 7 10 10\"/><path d=\"M17 7v10H7\"/></svg></button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; background: var(--signal, #3ee6ff); color: var(--signal-ink, #021016); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 600; border: 0; border-radius: 0; cursor: pointer; transition: opacity 200ms; } .ds-btn-primary .ds-arrow { transition: transform 300ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { opacity: 0.85; } .ds-btn-primary:hover .ds-arrow { transform: translate(2px, 2px); } .ds-btn-primary:focus-visible { outline: 2px solid var(--signal, #3ee6ff); outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Hairline-framed action that turns signal on hover (Resume, Open project, View project).",
+      "html": "<button class=\"ds-btn-secondary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8\"/><path d=\"M16 13H8\"/><path d=\"M16 17H8\"/></svg>Resume</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; background: transparent; color: var(--ink, #e9ecf2); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 600; border: 1px solid var(--line-strong, rgb(233 236 242 / 0.22)); border-radius: 0; cursor: pointer; transition: color 200ms, border-color 200ms; } .ds-btn-secondary:hover { color: var(--signal, #3ee6ff); border-color: var(--signal, #3ee6ff); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--signal, #3ee6ff); outline-offset: 3px; }"
+    },
+    {
+      "name": "Icon Button",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "40px hairline square for header utilities (terminal, theme, sound).",
+      "html": "<button class=\"ds-btn-icon\" aria-label=\"Open terminal\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"4 17 10 11 4 5\"/><line x1=\"12\" x2=\"20\" y1=\"19\" y2=\"19\"/></svg></button>",
+      "css": ".ds-btn-icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: transparent; color: var(--muted, #9aa3b5); border: 1px solid var(--line, rgb(233 236 242 / 0.11)); border-radius: 0; cursor: pointer; transition: color 200ms, border-color 200ms; } .ds-btn-icon:hover { color: var(--ink, #e9ecf2); border-color: var(--line-strong, rgb(233 236 242 / 0.22)); } .ds-btn-icon:focus-visible { outline: 2px solid var(--signal, #3ee6ff); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Labelled square field on ground; border goes signal on focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Name</span><input class=\"ds-input\" placeholder=\"Your name\" /></label>",
+      "css": ".ds-field { display: block; } .ds-field-label { display: block; margin-bottom: 8px; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; color: var(--muted, #9aa3b5); } .ds-input { width: 100%; padding: 12px 16px; background: var(--ground, #05070d); color: var(--ink, #e9ecf2); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 15px; border: 1px solid var(--line, rgb(233 236 242 / 0.11)); border-radius: 0; transition: border-color 200ms; } .ds-input::placeholder { color: var(--faint, #5d667a); } .ds-input:focus { outline: none; border-color: var(--signal, #3ee6ff); }"
+    },
+    {
+      "name": "Toggle Chip",
+      "kind": "chip",
+      "refersTo": "chip-toggle",
+      "description": "Square multi-select chip (tech picker); pressed fills with signal.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">React Native</button><button class=\"ds-chip\" aria-pressed=\"false\">Flutter</button><button class=\"ds-chip\" aria-pressed=\"false\">Python / AI</button></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; } .ds-chip { height: 40px; padding: 0 12px; background: transparent; color: var(--muted, #9aa3b5); font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; border: 1px solid var(--line, rgb(233 236 242 / 0.11)); border-radius: 0; cursor: pointer; transition: color 200ms, border-color 200ms, background 200ms; } .ds-chip:hover { color: var(--ink, #e9ecf2); border-color: var(--line-strong, rgb(233 236 242 / 0.22)); } .ds-chip[aria-pressed=\"true\"] { background: var(--signal, #3ee6ff); border-color: var(--signal, #3ee6ff); color: var(--signal-ink, #021016); } .ds-chip:focus-visible { outline: 2px solid var(--signal, #3ee6ff); outline-offset: 3px; }"
+    },
+    {
+      "name": "Header Nav",
+      "kind": "nav",
+      "description": "Geist nav links; active link is signal with a 1px underline scaling in on the header rule.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"true\">About<span></span></a><a href=\"#\">Path<span></span></a><a href=\"#\">Tech<span></span></a><a href=\"#\">Projects<span></span></a><a href=\"#\">Connect<span></span></a></nav>",
+      "css": ".ds-nav { display: flex; gap: 4px; height: 64px; align-items: center; border-bottom: 1px solid var(--line, rgb(233 236 242 / 0.11)); background: var(--ground, #05070d); padding: 0 16px; } .ds-nav a { position: relative; padding: 8px 12px; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: var(--muted, #9aa3b5); text-decoration: none; transition: color 200ms; } .ds-nav a:hover { color: var(--ink, #e9ecf2); } .ds-nav a span { position: absolute; left: 12px; right: 12px; bottom: -13px; height: 1px; background: var(--signal, #3ee6ff); transform: scaleX(0); transition: transform 500ms cubic-bezier(0.16,1,0.3,1); } .ds-nav a[aria-current=\"true\"] { color: var(--signal, #3ee6ff); } .ds-nav a[aria-current=\"true\"] span { transform: scaleX(1); } .ds-nav a:focus-visible { outline: 2px solid var(--signal, #3ee6ff); outline-offset: 3px; }"
+    },
+    {
+      "name": "Stage",
+      "kind": "custom",
+      "description": "Signature: crosshair-ticked box the latent field anchors a formation to, with a mono readout row.",
+      "html": "<div class=\"ds-stage\"><div class=\"ds-stage-readout\"><span>formation: portrait</span><span>step 37/50</span></div></div>",
+      "css": ".ds-stage { position: relative; height: 280px; --t: 14px; --c: var(--line-strong, rgb(233 236 242 / 0.22)); background: linear-gradient(var(--c),var(--c)) top left / var(--t) 1px no-repeat, linear-gradient(var(--c),var(--c)) top left / 1px var(--t) no-repeat, linear-gradient(var(--c),var(--c)) top right / var(--t) 1px no-repeat, linear-gradient(var(--c),var(--c)) top right / 1px var(--t) no-repeat, linear-gradient(var(--c),var(--c)) bottom left / var(--t) 1px no-repeat, linear-gradient(var(--c),var(--c)) bottom left / 1px var(--t) no-repeat, linear-gradient(var(--c),var(--c)) bottom right / var(--t) 1px no-repeat, linear-gradient(var(--c),var(--c)) bottom right / 1px var(--t) no-repeat, var(--ground, #05070d); } .ds-stage-readout { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; justify-content: space-between; gap: 12px; font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint, #5d667a); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "AI Block",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The one place magenta frames DOM content: AI-at-work moments.",
+      "html": "<div class=\"ds-ai\"><h3>Neural Networks &amp; AI</h3><p>Models shipped inside products, not demos.</p><div class=\"ds-ai-item\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg><h4>Vision AI</h4><p>Calorie estimation from a meal photo.</p></div></div>",
+      "css": ".ds-ai { padding: 32px; border: 1px solid color-mix(in srgb, var(--dream, #ff4fd8) 40%, transparent); border-radius: 0; background: transparent; } .ds-ai h3 { margin: 0; font-family: Unbounded, ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 24px; letter-spacing: -0.02em; text-transform: uppercase; color: var(--ink, #e9ecf2); } .ds-ai p { margin: 8px 0 0; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.625; color: var(--muted, #9aa3b5); } .ds-ai-item { margin-top: 32px; } .ds-ai-item svg { color: var(--dream, #ff4fd8); } .ds-ai-item h4 { margin: 12px 0 0; font-family: Geist, ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 600; color: var(--ink, #e9ecf2); }"
+    },
+    {
+      "name": "CLI Prompt",
+      "kind": "custom",
+      "description": "Mono prompt line with blinking signal block caret, above the hero name.",
+      "html": "<p class=\"ds-prompt\"><span class=\"u\">rv@latent</span><span class=\"p\">:~$ </span>render --subject richard<span class=\"caret\"></span></p>",
+      "css": ".ds-prompt { margin: 0; font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace; font-size: 13px; line-height: 1.625; color: var(--muted, #9aa3b5); } .ds-prompt .u { color: var(--ok, #4dffa6); } .ds-prompt .p { color: var(--faint, #5d667a); } .ds-prompt .caret { display: inline-block; width: 0.55em; height: 1.05em; margin-left: 2px; transform: translateY(0.18em); background: var(--signal, #3ee6ff); animation: ds-blink 1.05s steps(1) infinite; } @keyframes ds-blink { 50% { opacity: 0; } } @media (prefers-reduced-motion: reduce) { .ds-prompt .caret { animation: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Latent Field",
+    "overview": "The page is a diffusion sampler rendering its author. One persistent WebGL point field sits behind the content and denoises into a different formation per section (portrait, helix, neural lattice, device, portal). Scrolling is sampling. Every other surface is quiet so the field can be the image: an ink-black ground, bone text, and one phosphor-cyan signal color doing almost all of the accent work.\n\nThe chrome is a HUD, not a dashboard. It uses 1px hairline rules, square corners, crosshair corner ticks on the stages where the field lands, and mono readouts that report what the model is doing (step counters, formation names, system status). Depth comes from the field and from content resolving out of blur. The system does not use shadows, glows or glass. Density is editorial. Prose sits at 15px in Geist with roomy line height. Structure comes from rules and columns, not boxes.\n\nMagenta is the model \"dreaming\". It appears where the field disperses between formations and in the moments where AI is actually doing the work. Its rarity carries the meaning.",
+    "keyCharacteristics": [
+      "One persistent latent point field; each section owns a stage that the field morphs into.",
+      "Ink ground, bone text, cyan signal; magenta only for dispersal and AI moments.",
+      "Square corners everywhere; 1px hairlines; crosshair ticks on stages.",
+      "Three voices: Unbounded for display, Geist for UI and prose, JetBrains Mono for machine output.",
+      "Motion is sampling: scroll-linked morph, glyph-denoise headings, blur/perspective reveal; reduced motion resolves everything in place.",
+      "Dark is canonical; a light theme remaps the same roles."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Cyan is the only interactive accent. Primary fills, focus and active states all use signal and nothing else.", "section": "colors" },
+      { "name": "The Dreaming Rule", "body": "Magenta means the model is generating. It belongs to the field's dispersal and to AI-at-work moments. Never use it for navigation, chrome or decoration.", "section": "colors" },
+      { "name": "The Three Voices Rule", "body": "Unbounded names things: the person, the sections, the projects. Geist does everything a person reads or presses: actions, nav, labels and prose. JetBrains Mono is only for what the machine reports: the CLI prompt, stage readouts, dates, tech-stack tokens, numeric data and system status lines.", "section": "typography" },
+      { "name": "The Uppercase Belongs to Display Rule", "body": "Uppercase is for Unbounded display and the tiny mono readouts. Geist UI stays in sentence case.", "section": "typography" },
+      { "name": "The No Halo Rule", "body": "No box-shadows, drop-shadow glows or backdrop-filter glass. An element that needs separation gets a hairline or a tonal step.", "section": "elevation" },
+      { "name": "The Sampling Motion Rule", "body": "Motion depicts denoising. The field morphs between formations as you scroll. Headings resolve from random glyphs over about 900ms. Blocks rise out of blur and perspective with an expo-out ease and a 70ms stagger. Under prefers-reduced-motion the field shows final formations without interpolation, text renders resolved, and reveals are static.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep every corner square (0px) and every rule 1px; use line for structure and line-strong where an edge must hold.",
+      "Do give each new section a ticked stage for the latent field and a Unbounded uppercase headline that denoises from glyph noise.",
+      "Do use signal for every primary action, active state and focus outline (2px, 3px offset), with signal-ink text on signal fills.",
+      "Do set actions, nav, labels and prose in Geist; reserve JetBrains Mono for the CLI prompt, stage readouts, dates, tech-stack tokens, numeric data and status lines.",
+      "Do reveal content with the blur and perspective rise (cubic-bezier(0.16, 1, 0.3, 1), 70ms stagger) and make it resolve statically under reduced motion.",
+      "Do keep prose at 15px, line-height 1.625, max 65ch."
+    ],
+    "donts": [
+      "Don't use magenta (dream) outside the field's dispersal and AI-at-work moments.",
+      "Don't add box-shadows, glows, drop-shadow halos or backdrop-blur glass.",
+      "Don't round corners, including pills, avatars and badges.",
+      "Don't set buttons, nav or body copy in mono, or set data and readouts in Geist.",
+      "Don't wrap projects or skills in a grid of equal bordered cards; use hairline rows beside a stage.",
+      "Don't put a mono label line above a title as a kicker; readouts live in stage corners and beside data."
+    ]
+  }
+}

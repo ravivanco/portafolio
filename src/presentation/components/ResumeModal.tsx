@@ -1,25 +1,50 @@
-import React from 'react';
-import { ThemeMode } from '../../core/domain/entities/types';
+import React, { useEffect, useRef } from 'react';
 import { useResumeData } from '../hooks/useResumeData';
 import { soundFx } from '../../utils/sound';
 import { useLanguage } from '../context/LanguageContext';
-import { translations } from '../../utils/i18n';
-import { FileText, Download, Printer, X, Mail, Phone, MapPin, Github, Linkedin, Award, CheckCircle } from 'lucide-react';
-import { motion } from 'motion/react';
+import { FileText, Printer, X, Mail, Phone, MapPin, Github } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ResumeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  theme: ThemeMode;
 }
 
-export const ResumeModal: React.FC<ResumeModalProps> = ({ theme, onClose, isOpen }) => {
-  const { language } = useLanguage();
-  const t = translations[language];
-  const { PERSONAL_INFO, EXPERIENCES, PROJECTS, TECH_CATEGORIES, CERTIFICATIONS, LANGUAGES } = useResumeData();
-  const isDark = theme === 'dark';
+const COPY = {
+  es: {
+    profile: 'PERFIL PROFESIONAL', experience: 'EXPERIENCIA PROFESIONAL', projects: 'PROYECTOS DESTACADOS',
+    skills: 'HABILIDADES TÉCNICAS', certs: 'CERTIFICACIONES E IDIOMAS', print: 'IMPRIMIR / PDF', close: 'CERRAR VISOR',
+    langs: 'Español: Nativo · Inglés: Nivel B1',
+  },
+  en: {
+    profile: 'PROFESSIONAL PROFILE', experience: 'PROFESSIONAL EXPERIENCE', projects: 'FEATURED PROJECTS',
+    skills: 'TECHNICAL SKILLS', certs: 'CERTIFICATIONS AND LANGUAGES', print: 'PRINT / PDF', close: 'CLOSE VIEWER',
+    langs: 'Spanish: Native · English: Level B1',
+  },
+};
 
-  if (!isOpen) return null;
+const H2: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <h2 className="border-b border-line pb-1.5 font-mono text-[11px] font-semibold tracking-[0.16em] text-signal">{children}</h2>
+);
+
+export const ResumeModal: React.FC<ResumeModalProps> = ({ onClose, isOpen }) => {
+  const { language } = useLanguage();
+  const k = COPY[language];
+  const { PERSONAL_INFO, EXPERIENCES, PROJECTS, TECH_CATEGORIES, CERTIFICATIONS } = useResumeData();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen, onClose]);
 
   const handlePrint = () => {
     soundFx.playClick();
@@ -27,171 +52,152 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ theme, onClose, isOpen
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className={`w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border shadow-2xl flex flex-col justify-between ${
-          isDark ? 'bg-[#0a0f1d] border-cyan-500/50 text-slate-200' : 'bg-white text-slate-900 border-slate-300'
-        }`}
-      >
-        {/* Top Control Bar */}
-        <div className="p-4 border-b border-slate-800 bg-[#0d1322] flex items-center justify-between sticky top-0 z-20 font-mono text-xs">
-          <div className="flex items-center space-x-2 text-cyan-400 font-bold">
-            <FileText className="w-4 h-4" />
-            <span>CURRICULUM VITAE // RICHARD ALEXIS VIVANCO CHICAIZA</span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <button
-              id="print-resume-btn"
-              onClick={handlePrint}
-              className="px-3 py-1.5 rounded border border-slate-700 bg-slate-800 hover:border-cyan-400 text-slate-300 hover:text-white flex items-center space-x-1.5"
-            >
-              <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">IMPRIMIR / PDF</span>
-            </button>
-
-            <button
-              id="close-resume-btn"
-              onClick={onClose}
-              className="p-1.5 rounded border border-slate-700 bg-slate-800 text-slate-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* CV Printable Body */}
-        <div className="p-6 sm:p-10 space-y-8 font-sans text-xs sm:text-sm leading-relaxed" id="printable-cv">
-          {/* Header Block */}
-          <div className="border-b pb-6 border-slate-800 space-y-3">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-cyan-400 font-mono tracking-tight uppercase">
-                {PERSONAL_INFO.fullName}
-              </h1>
-              <p className="text-sm sm:text-base font-semibold text-slate-300 mt-1">
-                {PERSONAL_INFO.title} — {PERSONAL_INFO.degree}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-400">
-              <span className="flex items-center space-x-1">
-                <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{PERSONAL_INFO.location}</span>
-              </span>
-              <span className="flex items-center space-x-1">
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{PERSONAL_INFO.phone}</span>
-              </span>
-              <span className="flex items-center space-x-1">
-                <Mail className="w-3.5 h-3.5 text-fuchsia-400" />
-                <span>{PERSONAL_INFO.email}</span>
-              </span>
-              <span className="flex items-center space-x-1">
-                <Github className="w-3.5 h-3.5 text-slate-300" />
-                <span>github.com/ravivanco</span>
-              </span>
-            </div>
-          </div>
-
-          {/* Profile Summary */}
-          <div className="space-y-2">
-            <h2 className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-1">
-              PERFIL PROFESIONAL
-            </h2>
-            <p className="text-slate-300">{PERSONAL_INFO.bio}</p>
-          </div>
-
-          {/* Experience */}
-          <div className="space-y-4">
-            <h2 className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-1">
-              EXPERIENCIA PROFESIONAL
-            </h2>
-            <div className="space-y-4">
-              {EXPERIENCES.map((exp) => (
-                <div key={exp.id} className="space-y-1">
-                  <div className="flex justify-between items-baseline font-mono text-xs font-bold">
-                    <span className="text-white">{exp.role} — <span className="text-fuchsia-400">{exp.company}</span></span>
-                    <span className="text-slate-400">{exp.period}</span>
-                  </div>
-                  <ul className="space-y-1 text-slate-300">
-                    {exp.bullets.map((b, i) => (
-                      <li key={i} className="flex items-start space-x-2">
-                        <span className="text-cyan-400 font-mono">•</span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Featured Projects */}
-          <div className="space-y-4">
-            <h2 className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-1">
-              PROYECTOS DESTACADOS
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {PROJECTS.map((p) => (
-                <div key={p.id} className="p-3 rounded border border-slate-800 bg-[#0d1322] space-y-1">
-                  <div className="flex justify-between font-mono text-xs font-bold text-cyan-300">
-                    <span>{p.title}</span>
-                    <span className="text-slate-500">{p.date}</span>
-                  </div>
-                  <p className="text-xs text-slate-400 font-sans">{p.subtitle}</p>
-                  <div className="text-[11px] font-mono text-fuchsia-400">
-                    Stack: {p.techStack.join(', ')}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Skills & Certifications */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <h2 className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-1">
-                HABILIDADES TÉCNICAS
-              </h2>
-              <div className="space-y-1 font-mono text-xs text-slate-300">
-                <div><span className="text-fuchsia-400 font-bold">Móvil:</span> React Native, Flutter, Expo, Android Studio</div>
-                <div><span className="text-fuchsia-400 font-bold">Backend/Web:</span> Node.js, Express, Laravel, Spring Boot, Python</div>
-                <div><span className="text-fuchsia-400 font-bold">Frontend:</span> React, JavaScript, HTML, Tailwind CSS, Bootstrap</div>
-                <div><span className="text-fuchsia-400 font-bold">Bases de Datos:</span> PostgreSQL, MySQL, phpMyAdmin, MongoDB</div>
-                <div><span className="text-fuchsia-400 font-bold">IA & Tools:</span> Computer Vision, N8N, Git, Scrum, JIRA</div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="font-mono text-xs font-bold text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-1">
-                CERTIFICACIONES E IDIOMAS
-              </h2>
-              <div className="space-y-1 font-mono text-xs text-slate-300">
-                {CERTIFICATIONS.map((c) => (
-                  <div key={c.title}>• {c.title} — <span className="text-slate-400">{c.issuer}</span></div>
-                ))}
-                <div className="pt-2">
-                  <span className="text-fuchsia-400 font-bold">Español:</span> Nativo | <span className="text-fuchsia-400 font-bold">Inglés:</span> Nivel B1
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Modal Footer */}
-        <div className="p-4 border-t border-slate-800 bg-[#0d1322] flex justify-end space-x-3 font-mono text-xs">
-          <button
-            id="cv-modal-close-btn"
-            onClick={onClose}
-            className="px-5 py-2 rounded bg-cyan-500 hover:bg-cyan-400 text-black font-bold"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          key="resume"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-end justify-center bg-ground/85 sm:items-center sm:p-6"
+          onClick={onClose}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`CV ${PERSONAL_INFO.fullName}`}
+            initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="flex max-h-[94svh] w-full max-w-4xl flex-col border border-line-strong bg-surface"
           >
-            CERRAR VISOR
-          </button>
-        </div>
-      </motion.div>
-    </div>
+            <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-2 font-mono text-xs">
+              <div className="flex min-w-0 items-center gap-2 text-signal">
+                <FileText className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="truncate font-semibold">CURRICULUM VITAE // {PERSONAL_INFO.fullName}</span>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  id="print-resume-btn"
+                  type="button"
+                  onClick={handlePrint}
+                  className="flex h-10 items-center gap-2 border border-line px-3 text-muted hover:border-signal hover:text-signal"
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{k.print}</span>
+                </button>
+                <button
+                  ref={closeRef}
+                  id="close-resume-btn"
+                  type="button"
+                  aria-label={k.close}
+                  onClick={onClose}
+                  className="flex h-10 w-10 items-center justify-center border border-line text-muted hover:text-ink"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              <div id="printable-cv" className="space-y-8 p-5 text-sm leading-relaxed sm:p-10">
+                <header className="space-y-3 border-b border-line pb-6">
+                  <h1 className="font-display text-2xl font-bold uppercase tracking-[-0.02em] text-ink sm:text-3xl">{PERSONAL_INFO.fullName}</h1>
+                  <p className="font-medium text-muted">
+                    {PERSONAL_INFO.title} · {PERSONAL_INFO.degree}
+                  </p>
+                  <ul className="flex flex-wrap gap-x-5 gap-y-2 font-mono text-xs text-muted">
+                    <li className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-signal" aria-hidden="true" />{PERSONAL_INFO.location}</li>
+                    <li className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-signal" aria-hidden="true" />{PERSONAL_INFO.phone}</li>
+                    <li className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5 text-signal" aria-hidden="true" />{PERSONAL_INFO.email}</li>
+                    <li className="flex items-center gap-1.5"><Github className="h-3.5 w-3.5 text-signal" aria-hidden="true" />github.com/{PERSONAL_INFO.githubUsername}</li>
+                  </ul>
+                </header>
+
+                <section className="space-y-2">
+                  <H2>{k.profile}</H2>
+                  <p className="text-muted">{PERSONAL_INFO.bio}</p>
+                </section>
+
+                <section className="space-y-4">
+                  <H2>{k.experience}</H2>
+                  {EXPERIENCES.map((exp) => (
+                    <div key={exp.id} className="space-y-1.5">
+                      <div className="flex flex-wrap items-baseline justify-between gap-x-4 font-mono text-xs font-semibold">
+                        <span className="text-ink">
+                          {exp.role} — <span className="text-signal">{exp.company}</span>
+                        </span>
+                        <span className="text-faint">{exp.period}</span>
+                      </div>
+                      <ul className="space-y-1 text-muted">
+                        {exp.bullets.map((b, i) => (
+                          <li key={i} className="grid grid-cols-[14px_1fr]">
+                            <span aria-hidden="true" className="mt-[0.7em] h-px w-2 bg-signal" />
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </section>
+
+                <section className="space-y-4">
+                  <H2>{k.projects}</H2>
+                  <div className="grid grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
+                    {PROJECTS.map((p) => (
+                      <div key={p.id} className="space-y-1">
+                        <div className="flex justify-between gap-3 font-mono text-xs font-semibold">
+                          <span className="text-ink">{p.title}</span>
+                          <span className="text-faint">{p.date}</span>
+                        </div>
+                        <p className="text-xs text-muted">{p.subtitle}</p>
+                        <p className="font-mono text-[11px] text-faint">Stack: {p.techStack.join(', ')}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                  <section className="space-y-2">
+                    <H2>{k.skills}</H2>
+                    <ul className="space-y-1 font-mono text-xs text-muted">
+                      {TECH_CATEGORIES.map((cat) => (
+                        <li key={cat.title}>
+                          <span className="font-semibold text-ink">{cat.title}:</span> {cat.skills.map((s) => s.name).join(', ')}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                  <section className="space-y-2">
+                    <H2>{k.certs}</H2>
+                    <ul className="space-y-1 font-mono text-xs text-muted">
+                      {CERTIFICATIONS.map((c) => (
+                        <li key={c.title}>
+                          {c.title} — <span className="text-faint">{c.issuer}</span>
+                        </li>
+                      ))}
+                      <li className="pt-2 text-ink">{k.langs}</li>
+                    </ul>
+                  </section>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end border-t border-line p-3">
+              <button
+                id="cv-modal-close-btn"
+                type="button"
+                onClick={onClose}
+                className="h-10 bg-signal px-5 text-sm font-semibold text-signal-ink hover:opacity-85"
+              >
+                {k.close}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };

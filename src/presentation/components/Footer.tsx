@@ -1,116 +1,60 @@
 import React from 'react';
-import { ThemeMode } from '../../core/domain/entities/types';
 import { useResumeData } from '../hooks/useResumeData';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../../utils/i18n';
 import { soundFx } from '../../utils/sound';
-import { Github, Linkedin, Instagram, Mail, Shield } from 'lucide-react';
+import { Github, Linkedin, Instagram, Mail } from 'lucide-react';
 
-interface FooterProps {
-  theme: ThemeMode;
-}
-
-export const Footer: React.FC<FooterProps> = ({ theme }) => {
+export const Footer: React.FC = () => {
   const { language } = useLanguage();
-  const t = translations[language];
+  const t = translations[language].ui;
   const { PERSONAL_INFO } = useResumeData();
-  const isDark = theme === 'dark';
+
+  const links = [
+    { id: 'footer-github', href: PERSONAL_INFO.github, label: 'GitHub', Icon: Github },
+    { id: 'footer-linkedin', href: PERSONAL_INFO.linkedin, label: 'LinkedIn', Icon: Linkedin },
+    { id: 'footer-instagram', href: PERSONAL_INFO.instagram, label: 'Instagram', Icon: Instagram },
+    { id: 'footer-email', href: `mailto:${PERSONAL_INFO.email}`, label: 'Email', Icon: Mail },
+  ];
 
   return (
-    <footer
-      id="main-footer"
-      className={`border-t font-mono text-xs transition-colors duration-300 ${
-        isDark
-          ? 'bg-[#060911] border-[#182234] text-slate-400'
-          : 'bg-slate-100 border-slate-300 text-slate-600'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Left Brand info */}
-          <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded border font-bold ${isDark ? 'bg-cyan-950 border-cyan-500/40 text-cyan-400' : 'bg-cyan-100 border-cyan-400 text-cyan-800'}`}>
-              RV
-            </div>
+    <footer id="main-footer" className="relative z-10 border-t border-line bg-ground pb-24 lg:pb-0 lg:pl-16">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center border border-signal font-display text-[11px] font-bold text-signal">RV</span>
             <div>
-              <div className={`font-bold tracking-wider ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                SYSTEM_CORE // {PERSONAL_INFO.shortName}
-              </div>
-              <div className="text-[11px] text-slate-500">
-                {PERSONAL_INFO.degree}
-              </div>
+              <p className="font-mono text-[13px] font-semibold tracking-wider text-ink">SYSTEM_CORE // {PERSONAL_INFO.shortName}</p>
+              <p className="mt-0.5 text-xs text-faint">{PERSONAL_INFO.degree}</p>
+              <p className="mt-1 text-xs text-muted">&ldquo;{PERSONAL_INFO.motto}&rdquo;</p>
             </div>
           </div>
-
-          {/* Social Links */}
-          <div className="flex items-center space-x-4">
-            <a
-              id="footer-github"
-              href={PERSONAL_INFO.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              onMouseEnter={() => soundFx.playHover()}
-              className={`p-2 rounded transition-colors ${isDark ? 'hover:bg-slate-800 hover:text-cyan-400 text-slate-400' : 'hover:bg-slate-200 hover:text-cyan-600 text-slate-600'}`}
-              title="GitHub"
-            >
-              <Github className="w-4 h-4" />
-            </a>
-
-            <a
-              id="footer-linkedin"
-              href={PERSONAL_INFO.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              onMouseEnter={() => soundFx.playHover()}
-              className={`p-2 rounded transition-colors ${isDark ? 'hover:bg-slate-800 hover:text-blue-400 text-slate-400' : 'hover:bg-slate-200 hover:text-blue-600 text-slate-600'}`}
-              title="LinkedIn"
-            >
-              <Linkedin className="w-4 h-4" />
-            </a>
-
-            <a
-              id="footer-instagram"
-              href={PERSONAL_INFO.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              onMouseEnter={() => soundFx.playHover()}
-              className={`p-2 rounded transition-colors ${isDark ? 'hover:bg-slate-800 hover:text-fuchsia-400 text-slate-400' : 'hover:bg-slate-200 hover:text-fuchsia-600 text-slate-600'}`}
-              title="Instagram"
-            >
-              <Instagram className="w-4 h-4" />
-            </a>
-
-            <a
-              id="footer-email"
-              href={`mailto:${PERSONAL_INFO.email}`}
-              onMouseEnter={() => soundFx.playHover()}
-              className={`p-2 rounded transition-colors ${isDark ? 'hover:bg-slate-800 hover:text-emerald-400 text-slate-400' : 'hover:bg-slate-200 hover:text-emerald-600 text-slate-600'}`}
-              title="Email"
-            >
-              <Mail className="w-4 h-4" />
-            </a>
-          </div>
+          <ul className="flex gap-1">
+            {links.map(({ id, href, label, Icon }) => (
+              <li key={id}>
+                <a
+                  id={id}
+                  href={href}
+                  target={href.startsWith('mailto') ? undefined : '_blank'}
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  onMouseEnter={() => soundFx.playHover()}
+                  className="flex h-10 w-10 items-center justify-center text-muted transition-colors duration-200 hover:text-signal"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        {/* Bottom Bar */}
-        <div className={`pt-4 border-t ${isDark ? 'border-slate-800/60' : 'border-slate-300'}`}>
-          <div className="flex items-center space-x-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider mb-4">
-            <Shield className="w-4 h-4" />
-            <span>SYSTEM_INTEGRITY // LEGAL</span>
-          </div>
-          <p className={`font-mono text-[10px] leading-relaxed mb-4 ${
-            isDark ? 'text-slate-500' : 'text-slate-500'
-          }`}>
-            © {new Date().getFullYear()} {PERSONAL_INFO.fullName}. All rights reserved. The source code and architecture of this portfolio are protected intellectual property.
+        <div className="flex flex-col justify-between gap-3 border-t border-line pt-6 text-xs text-faint md:flex-row">
+          <p className="max-w-[80ch]">
+            © {new Date().getFullYear()} {PERSONAL_INFO.fullName}. {t.footer_legal}
           </p>
-          <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className={`font-mono text-[10px] font-bold ${
-              isDark ? 'text-emerald-400' : 'text-emerald-600'
-            }`}>
-              SECURE_CONNECTION_ESTABLISHED
-            </span>
-          </div>
+          <p className="flex items-center gap-2 font-mono text-[11px] text-ok">
+            <span className="pulse-dot h-1.5 w-1.5 bg-ok" />
+            SECURE_CONNECTION_ESTABLISHED
+          </p>
         </div>
       </div>
     </footer>
