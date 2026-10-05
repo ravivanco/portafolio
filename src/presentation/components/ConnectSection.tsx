@@ -114,8 +114,8 @@ export const ConnectSection: React.FC = () => {
                 aria-label={c.copy_email}
                 className="flex h-10 shrink-0 items-center gap-1.5 border border-line px-3 font-mono text-[11px] text-muted transition-colors duration-200 hover:border-signal hover:text-signal"
               >
-                {copied ? <Check className="h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
-                <span aria-live="polite">{copied ? t.ui.copied : ''}</span>
+                {copied ? <Check className="resolve-in h-3.5 w-3.5 text-ok" /> : <Copy className="h-3.5 w-3.5" />}
+                <span aria-live="polite" className={copied ? 'resolve-in' : undefined}>{copied ? t.ui.copied : ''}</span>
               </button>
             </div>
             <div className="py-4">
@@ -248,7 +248,7 @@ export const ConnectSection: React.FC = () => {
                     </div>
 
                     {error && (
-                      <p role="alert" className="flex items-start gap-2 border border-danger/50 p-3 text-sm text-ink">
+                      <p role="alert" className="resolve-in flex items-start gap-2 border border-danger/50 p-3 text-sm text-ink">
                         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" aria-hidden="true" />
                         <span>
                           {t.ui.form_error}{' '}

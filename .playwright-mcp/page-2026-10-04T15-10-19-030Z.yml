@@ -1,0 +1,464 @@
+- generic [ref=e3]:
+  - link "Skip to content" [ref=e4] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - button "RV RICHARD_VIVANCO SYS_OPERATIONAL" [ref=e7]:
+        - generic [ref=e8]: RV
+        - generic [ref=e9]:
+          - generic [ref=e10]: RICHARD_VIVANCO
+          - generic [ref=e11]: SYS_OPERATIONAL
+      - navigation "Primary" [ref=e13]:
+        - link "HOME" [ref=e14] [cursor=pointer]:
+          - /url: "#section-mission"
+        - link "PATH" [ref=e16] [cursor=pointer]:
+          - /url: "#section-path"
+        - link "TECH" [ref=e17] [cursor=pointer]:
+          - /url: "#section-core-tech"
+        - link "PROJECTS" [ref=e18] [cursor=pointer]:
+          - /url: "#section-projects"
+        - link "CONTACT" [ref=e19] [cursor=pointer]:
+          - /url: "#section-connect"
+      - generic [ref=e20]:
+        - group "Language" [ref=e21]:
+          - button "es" [ref=e22]
+          - button "en" [pressed] [ref=e23]
+        - button "Open interactive terminal" [ref=e24]
+        - button "Toggle theme" [ref=e27]
+        - button "Toggle sound effects" [pressed] [ref=e34]
+        - button "Open resume" [ref=e39]:
+          - generic [ref=e43]: RESUME.PDF
+  - complementary [ref=e44]:
+    - navigation "Formations" [ref=e45]:
+      - button "portrait" [ref=e47]
+      - button "helix" [ref=e49]
+      - button "neural_lattice" [ref=e51]
+      - button "device" [ref=e53]
+      - button "portal" [ref=e55]
+    - generic [ref=e57]:
+      - link "GitHub" [ref=e58] [cursor=pointer]:
+        - /url: https://github.com/ravivanco
+      - link "LinkedIn" [ref=e62] [cursor=pointer]:
+        - /url: https://linkedin.com/in/richard-vivanco
+      - link "Instagram" [ref=e67] [cursor=pointer]:
+        - /url: https://www.instagram.com/richarfd199/
+      - link "Email" [ref=e71] [cursor=pointer]:
+        - /url: mailto:rvivanco199@gmail.com
+  - main [ref=e75]:
+    - region [ref=e76]:
+      - generic [ref=e79]:
+        - generic [ref=e80]: Quito, Ecuador
+        - generic [ref=e81]: step 50/50
+      - generic [ref=e82]:
+        - paragraph [ref=e83]: rv@latent:~$ generate --subject "richard vivanco" --steps 50
+        - heading "RICHARD VIVANCO" [level=1] [ref=e85]:
+          - generic [ref=e86]: RICHARD
+          - generic [ref=e87]: VIVANCO
+        - paragraph [ref=e88]:
+          - text: Software Engineer building
+          - strong [ref=e89]: full stack
+          - text: ","
+          - strong [ref=e90]: AI
+          - text: and
+          - strong [ref=e91]: mobile
+          - text: products, from the phone app to the model behind it.
+        - generic [ref=e92]:
+          - button "Send a proposal" [ref=e93]
+          - generic [ref=e97]:
+            - button "View resume" [ref=e98]
+            - 'link "GitHub: ravivanco" [ref=e102] [cursor=pointer]':
+              - /url: https://github.com/ravivanco
+            - 'link "LinkedIn: richard-vivanco" [ref=e106] [cursor=pointer]':
+              - /url: https://linkedin.com/in/richard-vivanco
+    - region [ref=e111]:
+      - generic [ref=e112]: "formation: helix"
+      - generic [ref=e116]:
+        - heading "CAREER FLIGHT_PATH" [level=2] [ref=e117]
+        - generic [ref=e118]:
+          - img "Portrait of Richard Vivanco" [ref=e119]
+          - generic [ref=e120]:
+            - heading "Profile" [level=3] [ref=e121]
+            - paragraph [ref=e122]: Software Engineer graduated from Universidad de las Fuerzas Armadas ESPE, specializing in mobile development with complementary experience in full stack web and backend development. I have built applications integrating artificial intelligence for image recognition and content recommendation, as well as mobile solutions for urban mobility and delivery. I combine solid technical training in software architecture and databases with a rapid adaptability to new methodologies, tools, and agile teams, always orienting my work towards building functional, scalable, and user-centric products.
+        - generic [ref=e123]:
+          - generic [ref=e127]:
+            - heading "Education" [level=3] [ref=e128]
+            - paragraph [ref=e129]: Software Engineering — Universidad de las Fuerzas Armadas ESPE-L (Graduate)
+          - generic [ref=e130]: Graduate
+        - list [ref=e131]:
+          - listitem [ref=e132]:
+            - paragraph [ref=e134]: Oct. 2025 · Quito, Ecuador
+            - heading "Mobile Developer — Internship" [level=3] [ref=e135]
+            - paragraph [ref=e136]:
+              - text: Kaizen Software
+              - generic [ref=e137]: / Internship
+            - list [ref=e138]:
+              - listitem [ref=e139]:
+                - generic [ref=e141]: Developed a mobile delivery application using React Native and Expo, covering order flows, real-time tracking, and user management.
+              - listitem [ref=e142]:
+                - generic [ref=e144]: Implemented and tested native modules with Android Studio to ensure high compatibility, memory optimization, and performance on Android devices.
+              - listitem [ref=e145]:
+                - generic [ref=e147]: Collaborated directly with the technical team under agile methodologies (Scrum), actively participating in code reviews, sprints, and incremental deliveries.
+            - paragraph [ref=e148]: React Native / Expo / Android Studio / JavaScript / Scrum / Git
+          - listitem [ref=e149]:
+            - paragraph [ref=e151]: Ago. 2023 · Quito, Ecuador
+            - heading "Mobile Developer — Community Project" [level=3] [ref=e152]
+            - paragraph [ref=e153]:
+              - text: PROWESS BIKE
+              - generic [ref=e154]: / Community Project
+            - list [ref=e155]:
+              - listitem [ref=e156]:
+                - generic [ref=e158]: Developed the mobile module of the application with Flutter and Android Studio, focused on the user experience for route and bicycle management.
+              - listitem [ref=e159]:
+                - generic [ref=e161]: Participated in the user interface (UI/UX) design and business logic of the app, coordinating with the multidisciplinary team of the university project.
+              - listitem [ref=e162]:
+                - generic [ref=e164]: Integrated with Google Maps API cartographic services for interactive tracing of cycling routes and distance calculation.
+            - paragraph [ref=e165]: Flutter / Dart / Android Studio / Google Maps API / Mobile UX
+          - listitem [ref=e166]:
+            - paragraph [ref=e168]: Ago. 2021 · Quito, Ecuador
+            - heading "Full Stack Developer" [level=3] [ref=e169]
+            - paragraph [ref=e170]:
+              - text: NYC Arquitectos
+              - generic [ref=e171]: / Freelance / Project
+            - list [ref=e172]:
+              - listitem [ref=e173]:
+                - generic [ref=e175]: Comprehensive design and development of the architecture firm's corporate website, covering both the responsive frontend and backend API.
+              - listitem [ref=e176]:
+                - generic [ref=e178]: Implementation of custom functionalities to present interactive portfolios of architectural projects and a dynamic content manager.
+              - listitem [ref=e179]:
+                - generic [ref=e181]: SEO load optimization, elegant visual structures, and responsive layout adapted for mobile and desktop devices.
+            - paragraph [ref=e182]: React / Node.js / Express / Tailwind CSS / JavaScript / MySQL
+    - region [ref=e183]:
+      - generic [ref=e186]:
+        - generic [ref=e187]: "formation: neural_lattice"
+        - generic [ref=e188]: 4 layers / 24 nodes
+      - generic [ref=e189]:
+        - heading "TECH ARSENAL" [level=2] [ref=e190]
+        - paragraph [ref=e191]: "SYSTEM STATUS: OPERATIONAL // CAPABILITIES MATRIX ONLINE"
+        - generic [ref=e193]:
+          - generic [ref=e194]:
+            - heading "Mobile Development" [level=3] [ref=e195]
+            - list [ref=e196]:
+              - listitem [ref=e197]:
+                - generic [ref=e200]: React Native
+                - generic [ref=e202]: Advanced
+              - listitem [ref=e203]:
+                - generic [ref=e206]: Flutter
+              - listitem [ref=e207]:
+                - generic [ref=e210]: Expo
+              - listitem [ref=e211]:
+                - generic [ref=e214]: Android Studio
+          - generic [ref=e215]:
+            - heading "Backend & Web" [level=3] [ref=e216]
+            - list [ref=e217]:
+              - listitem [ref=e218]:
+                - generic [ref=e221]: Node.js
+                - generic [ref=e223]: Advanced
+              - listitem [ref=e224]:
+                - generic [ref=e227]: Express
+              - listitem [ref=e228]:
+                - generic [ref=e231]: Laravel
+              - listitem [ref=e232]:
+                - generic [ref=e235]: Spring Boot
+              - listitem [ref=e236]:
+                - generic [ref=e239]: Python
+          - generic [ref=e240]:
+            - heading "Frontend / Web" [level=3] [ref=e241]
+            - list [ref=e242]:
+              - listitem [ref=e243]:
+                - generic [ref=e246]: React
+                - generic [ref=e248]: Advanced
+              - listitem [ref=e249]:
+                - generic [ref=e252]: JavaScript
+              - listitem [ref=e253]:
+                - generic [ref=e256]: HTML5
+              - listitem [ref=e257]:
+                - generic [ref=e260]: Tailwind CSS
+              - listitem [ref=e261]:
+                - generic [ref=e264]: Bootstrap
+          - generic [ref=e265]:
+            - heading "Languages" [level=3] [ref=e266]
+            - list [ref=e267]:
+              - listitem [ref=e268]:
+                - generic [ref=e271]: Java
+              - listitem [ref=e272]:
+                - generic [ref=e275]: JavaScript / TS
+                - generic [ref=e277]: Advanced
+              - listitem [ref=e278]:
+                - generic [ref=e281]: Python
+              - listitem [ref=e282]:
+                - generic [ref=e287]: C#
+              - listitem [ref=e288]:
+                - generic [ref=e291]: C++
+          - generic [ref=e292]:
+            - heading "Databases" [level=3] [ref=e293]
+            - list [ref=e294]:
+              - listitem [ref=e295]:
+                - generic [ref=e298]: PostgreSQL
+                - generic [ref=e300]: Advanced
+              - listitem [ref=e301]:
+                - generic [ref=e304]: MySQL
+              - listitem [ref=e305]:
+                - generic [ref=e308]: MongoDB
+              - listitem [ref=e309]:
+                - generic [ref=e312]: phpMyAdmin
+          - generic [ref=e313]:
+            - heading "AI & Automation" [level=3] [ref=e314]
+            - list [ref=e315]:
+              - listitem [ref=e316]:
+                - generic [ref=e319]: Image Recognition (Vision AI)
+              - listitem [ref=e320]:
+                - generic [ref=e323]: Recommendation Engines
+              - listitem [ref=e324]:
+                - generic [ref=e327]: N8N Automation
+              - listitem [ref=e328]:
+                - generic [ref=e331]: LLM / Gemini Integration
+        - generic [ref=e332]:
+          - heading "NEURAL NETWORKS & AI" [level=3] [ref=e333]
+          - paragraph [ref=e334]: Artificial intelligence, computer vision, and process automation.
+          - generic [ref=e335]:
+            - generic [ref=e336]:
+              - heading "Computer Vision" [level=4] [ref=e340]
+              - paragraph [ref=e341]: Image recognition, food classification in DK-Fitt, and pattern processing.
+            - generic [ref=e342]:
+              - heading "Recommendation Engines" [level=4] [ref=e346]
+              - paragraph [ref=e347]: Generation of personalized nutritional plans adapted to user needs.
+            - generic [ref=e348]:
+              - heading "N8N Automation" [level=4] [ref=e353]
+              - paragraph [ref=e354]: Automated workflows for delivery, webhooks, and backend microservices with Python.
+        - generic [ref=e355]:
+          - generic [ref=e356]:
+            - heading "Languages" [level=3] [ref=e357]
+            - list [ref=e358]:
+              - listitem [ref=e359]:
+                - generic [ref=e360]: Spanish
+                - generic [ref=e361]: Native // MAX
+              - listitem [ref=e362]:
+                - generic [ref=e363]: English
+                - generic [ref=e364]: Level B1 // MID
+          - generic [ref=e365]:
+            - heading "Certifications" [level=3] [ref=e366]
+            - list [ref=e367]:
+              - listitem [ref=e368]:
+                - generic [ref=e372]:
+                  - paragraph [ref=e373]: Cybersecurity Fundamentals
+                  - paragraph [ref=e374]: Universidad de las Fuerzas Armadas ESPE · 2025
+              - listitem [ref=e375]:
+                - generic [ref=e379]:
+                  - paragraph [ref=e380]: Data Science and Machine Learning applied to Cybersecurity
+                  - paragraph [ref=e381]: Universidad de las Fuerzas Armadas ESPE · 2025
+    - region [ref=e382]:
+      - generic [ref=e383]: "formation: device"
+      - generic [ref=e387]:
+        - heading "PROJECT_OS" [level=2] [ref=e388]
+        - paragraph [ref=e389]: Exploring high-performance deployments. Select a mission node to review structural analytics and technical integration stacks.
+        - generic [ref=e391]:
+          - generic [ref=e392]:
+            - heading "AI Vision nutrition scanner" [level=3] [ref=e397]
+            - generic [ref=e398]: AI ENGINE CONNECTED
+          - generic [ref=e400]:
+            - generic [ref=e401]:
+              - generic [ref=e402]:
+                - img "Avocado Toast with Poached Egg" [ref=e403]
+                - button "Start nutrition scan" [ref=e404]
+              - paragraph [ref=e410]: Pick a dish to analyze
+              - generic [ref=e411]:
+                - button "Avocado Toast with Poached Egg" [pressed] [ref=e412]
+                - button "Grilled Salmon and Quinoa Bowl" [ref=e414]
+                - button "Berry Protein Smoothie" [ref=e416]
+            - generic [ref=e418]:
+              - paragraph [ref=e419]: Nutrition analysis results
+              - paragraph [ref=e424]: Pick a dish or press "Start scan" to simulate the DK-Fitt visual detection.
+              - paragraph [ref=e425]: "Illustrative simulation: sample values, not model output."
+        - generic [ref=e426]:
+          - tablist "Filter" [ref=e427]:
+            - tab "ALL PROJECTS" [selected] [ref=e428]
+            - tab "MOBILE DEVELOPMENT" [ref=e430]
+            - tab "AI INTEGRATION" [ref=e431]
+            - tab "FULL STACK WEB" [ref=e432]
+          - paragraph [ref=e433]: SHOWING 5 NODE(S)
+        - generic [ref=e434]:
+          - article [ref=e435]:
+            - generic [ref=e437]:
+              - 'button "View specifications: DK-Fitt" [ref=e438]'
+              - generic [ref=e439]: Featured project
+            - generic [ref=e440]:
+              - generic [ref=e441]:
+                - heading "DK-Fitt" [level=3] [ref=e442]
+                - generic [ref=e443]: Feb. 2026
+              - paragraph [ref=e444]: "Thesis Project: AI-powered Nutritional Control Mobile App"
+              - list [ref=e445]:
+                - listitem [ref=e446]:
+                  - generic [ref=e448]: "Mobile Module (Patient): Capture of biometric data and daily logging of the patient's status."
+                - listitem [ref=e449]:
+                  - generic [ref=e451]: "AI Recognition: Implementation of computer vision/AI for automatic calorie estimation through photographs of food plates."
+              - paragraph [ref=e452]: React Native / Node.js / PostgreSQL / IA Vision / Cloudinary / Expo
+              - generic [ref=e453]:
+                - button "View specifications" [ref=e454]
+                - link "VIEW SOURCE CODE" [ref=e458] [cursor=pointer]:
+                  - /url: https://github.com/ravivanco/DK-Fitt
+          - article [ref=e462]:
+            - 'button "View specifications: NutriSportFit" [ref=e465]'
+            - generic [ref=e466]:
+              - generic [ref=e467]:
+                - heading "NutriSportFit" [level=3] [ref=e468]
+                - generic [ref=e469]: Feb. 2025
+              - paragraph [ref=e470]: Mobile & Cloud Developer — Health and Nutrition Mobile Application
+              - list [ref=e471]:
+                - listitem [ref=e472]:
+                  - generic [ref=e474]: "Biometric Calculation: Algorithm for immediate calculation of Body Mass Index (BMI) from initial variables."
+                - listitem [ref=e475]:
+                  - generic [ref=e477]: "Nutritional Recommendation Engine: Algorithm connected to Cloud architecture that generates daily and weekly meal plans."
+              - paragraph [ref=e478]: Flutter / Dart / Firebase / Android Studio
+              - generic [ref=e479]:
+                - button "View specifications" [ref=e480]
+                - link "VIEW SOURCE CODE" [ref=e484] [cursor=pointer]:
+                  - /url: https://github.com/ravivanco/NutriSportiff
+          - article [ref=e488]:
+            - 'button "View specifications: PROWESS BIKE" [ref=e491]'
+            - generic [ref=e492]:
+              - generic [ref=e493]:
+                - heading "PROWESS BIKE" [level=3] [ref=e494]
+                - generic [ref=e495]: Ago. 2023
+              - paragraph [ref=e496]: Software Developer — Community Commerce Platform
+              - list [ref=e497]:
+                - listitem [ref=e498]:
+                  - generic [ref=e500]: "Digital Micro-market: Creation of a catalog for the direct commercialization of local products."
+                - listitem [ref=e501]:
+                  - generic [ref=e503]: "Logistics and Distribution: Module for order management, delivery traceability, and optimal route calculation."
+              - paragraph [ref=e504]: Flutter / Android Studio / Google Maps API / Dart
+              - generic [ref=e505]:
+                - button "View specifications" [ref=e506]
+                - link "VIEW SOURCE CODE" [ref=e510] [cursor=pointer]:
+                  - /url: https://github.com/ravivanco/PROWESS-BIKE
+          - article [ref=e514]:
+            - 'button "View specifications: NEXOVO (Kaizen Software)" [ref=e517]'
+            - generic [ref=e518]:
+              - generic [ref=e519]:
+                - heading "NEXOVO (Kaizen Software)" [level=3] [ref=e520]
+                - generic [ref=e521]: Oct. 2025
+              - paragraph [ref=e522]: Full Stack & Mobile Developer — Logistics / Delivery Web and Mobile Application
+              - list [ref=e523]:
+                - listitem [ref=e524]:
+                  - generic [ref=e526]: "Real-Time Communication: Integration of live chat between client and driver within the mobile and web application."
+                - listitem [ref=e527]:
+                  - generic [ref=e529]: "Operational Management: Development of automated date assignment, delivery scheduling, and notification engine."
+              - paragraph [ref=e530]: React Native / Expo / Android Studio / Node.js / Express
+              - generic [ref=e531]:
+                - button "View specifications" [ref=e532]
+                - link "VIEW SOURCE CODE" [ref=e536] [cursor=pointer]:
+                  - /url: https://github.com/ravivanco
+          - article [ref=e540]:
+            - 'button "View specifications: NYC Arquitectos" [ref=e543]'
+            - generic [ref=e544]:
+              - generic [ref=e545]:
+                - heading "NYC Arquitectos" [level=3] [ref=e546]
+                - generic [ref=e547]: Ago. 2021
+              - paragraph [ref=e548]: Full Stack Developer — Corporate Web Platform
+              - list [ref=e549]:
+                - listitem [ref=e550]:
+                  - generic [ref=e552]: "Full Stack Development: Complete implementation of the frontend and backend architecture for the platform."
+                - listitem [ref=e553]:
+                  - generic [ref=e555]: "Dynamic Content Management: Administration module for architects to update the catalog of projects and services in real-time."
+              - paragraph [ref=e556]: React / Node.js / Express / Tailwind CSS / MySQL
+              - generic [ref=e557]:
+                - button "View specifications" [ref=e558]
+                - link "VIEW SOURCE CODE" [ref=e562] [cursor=pointer]:
+                  - /url: https://github.com/ravivanco
+    - region [ref=e566]:
+      - generic [ref=e568]: "formation: portal"
+      - generic [ref=e570]:
+        - heading "PROPOSAL UPLINK" [level=2] [ref=e571]
+        - paragraph [ref=e572]: Optimized form for receiving job proposals, hiring offers, and mobile / AI development projects.
+      - generic [ref=e573]:
+        - complementary [ref=e574]:
+          - heading "DIRECT_TRANSMISSION_INFO" [level=3] [ref=e575]
+          - generic [ref=e576]:
+            - generic [ref=e577]:
+              - generic [ref=e578]:
+                - term [ref=e579]: EMAIL ADDRESS
+                - definition [ref=e580]:
+                  - link "rvivanco199@gmail.com" [ref=e581] [cursor=pointer]:
+                    - /url: mailto:rvivanco199@gmail.com
+              - button "Copy Email" [ref=e582]
+            - generic [ref=e586]:
+              - term [ref=e587]: PHONE / WHATSAPP
+              - definition [ref=e588]:
+                - link "(+593) 979 314 381" [ref=e591] [cursor=pointer]:
+                  - /url: tel:+593979314381
+            - generic [ref=e592]:
+              - term [ref=e593]: GEOGRAPHICAL LOCATION
+              - definition [ref=e594]: Quito, Ecuador
+          - heading "SOCIAL NETWORKS AND PROFILES" [level=3] [ref=e598]
+          - list [ref=e599]:
+            - listitem [ref=e600]:
+              - link "GitHub" [ref=e601] [cursor=pointer]:
+                - /url: https://github.com/ravivanco
+            - listitem [ref=e605]:
+              - link "LinkedIn" [ref=e606] [cursor=pointer]:
+                - /url: https://linkedin.com/in/richard-vivanco
+            - listitem [ref=e611]:
+              - link "Instagram" [ref=e612] [cursor=pointer]:
+                - /url: https://www.instagram.com/richarfd199/
+        - generic [ref=e618]:
+          - heading "SEND JOB PROPOSAL" [level=3] [ref=e619]
+          - paragraph [ref=e620]: Fill in the details of your offer or project. You will receive a direct response in less than 24 hours.
+          - generic [ref=e621]:
+            - generic [ref=e622]:
+              - generic [ref=e623]:
+                - generic [ref=e624]: FULL NAME *
+                - textbox "FULL NAME *" [ref=e625]:
+                  - /placeholder: E.g. John Doe
+              - generic [ref=e626]:
+                - generic [ref=e627]: CONTACT EMAIL *
+                - textbox "CONTACT EMAIL *" [ref=e628]:
+                  - /placeholder: example@company.com
+            - generic [ref=e629]:
+              - generic [ref=e630]: COMPANY / INSTITUTION
+              - textbox "COMPANY / INSTITUTION" [ref=e631]:
+                - /placeholder: E.g. Tech Solutions Corp
+            - generic [ref=e632]:
+              - generic [ref=e633]: PROPOSAL TYPE *
+              - combobox "PROPOSAL TYPE *" [ref=e635]:
+                - option "Full-time Hiring" [selected]
+                - option "Freelance / Contract Project"
+                - option "Custom Mobile App Development"
+                - option "Artificial Intelligence Consulting"
+                - option "Other / General Inquiry"
+            - group "REQUIRED TECHNOLOGIES / MODULES:" [ref=e636]:
+              - generic [ref=e638]:
+                - button "React Native" [ref=e639]
+                - button "Flutter" [ref=e640]
+                - button "Node.js" [ref=e641]
+                - button "Python / AI" [ref=e642]
+                - button "React / Next.js" [ref=e643]
+                - button "AWS / Cloud" [ref=e644]
+            - generic [ref=e645]:
+              - generic [ref=e646]: PROPOSAL DETAILS / PROJECT DESCRIPTION *
+              - textbox "PROPOSAL DETAILS / PROJECT DESCRIPTION *" [ref=e647]:
+                - /placeholder: Describe the role, app objectives, estimated scope, and deadlines...
+            - button "TRANSMIT JOB PROPOSAL" [ref=e648]
+  - contentinfo [ref=e653]:
+    - generic [ref=e654]:
+      - generic [ref=e655]:
+        - generic [ref=e656]:
+          - generic [ref=e657]: RV
+          - generic [ref=e658]:
+            - paragraph [ref=e659]: SYSTEM_CORE // RICHARD VIVANCO
+            - paragraph [ref=e660]: Software Engineering — Universidad de las Fuerzas Armadas ESPE-L (Graduate)
+            - paragraph [ref=e661]: “Building the present, designing the future.”
+        - list [ref=e662]:
+          - listitem [ref=e663]:
+            - link "GitHub" [ref=e664] [cursor=pointer]:
+              - /url: https://github.com/ravivanco
+          - listitem [ref=e668]:
+            - link "LinkedIn" [ref=e669] [cursor=pointer]:
+              - /url: https://linkedin.com/in/richard-vivanco
+          - listitem [ref=e674]:
+            - link "Instagram" [ref=e675] [cursor=pointer]:
+              - /url: https://www.instagram.com/richarfd199/
+          - listitem [ref=e679]:
+            - link "Email" [ref=e680] [cursor=pointer]:
+              - /url: mailto:rvivanco199@gmail.com
+      - generic [ref=e684]:
+        - paragraph [ref=e685]: © 2026 RICHARD ALEXIS VIVANCO CHICAIZA. All rights reserved. The source code and architecture of this portfolio are protected intellectual property.
+        - paragraph [ref=e686]: SECURE_CONNECTION_ESTABLISHED

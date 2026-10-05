@@ -58,7 +58,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ onClose, isOpen }) => 
           key="resume"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.2 } }}
           className="fixed inset-0 z-50 flex items-end justify-center bg-ground/85 sm:items-center sm:p-6"
           onClick={onClose}
         >
@@ -68,7 +68,7 @@ export const ResumeModal: React.FC<ResumeModalProps> = ({ onClose, isOpen }) => 
             aria-label={`CV ${PERSONAL_INFO.fullName}`}
             initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
             animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
+            exit={{ opacity: 0, y: 16, filter: 'blur(6px)', transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             onClick={(e) => e.stopPropagation()}
             className="flex max-h-[94svh] w-full max-w-4xl flex-col border border-line-strong bg-surface"

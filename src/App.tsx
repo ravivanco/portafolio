@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { MotionConfig } from 'motion/react';
 import { ThemeMode } from './core/domain/entities/types';
 import { Header } from './presentation/components/Header';
@@ -13,7 +14,7 @@ import { TerminalDrawer } from './presentation/components/TerminalDrawer';
 import { ResumeModal } from './presentation/components/ResumeModal';
 import { Footer } from './presentation/components/Footer';
 import { LatentCanvas } from './presentation/components/LatentCanvas';
-import { useActiveSection, useRevealObserver } from './presentation/hooks/useLatent';
+import { prefersReducedMotion, useActiveSection, useRevealObserver } from './presentation/hooks/useLatent';
 import { useLanguage } from './presentation/context/LanguageContext';
 import { translations } from './utils/i18n';
 
@@ -42,6 +43,19 @@ export default function App() {
     }
   }, [theme]);
 
+  // Theme change re-renders the frame: the new palette scans in top to bottom
+  // (see ::view-transition-new(root) in index.css). Instant where unsupported or reduced.
+  const switchTheme = useCallback((next: ThemeMode) => {
+    if (!document.startViewTransition || prefersReducedMotion()) {
+      setTheme(next);
+      return;
+    }
+    document.startViewTransition(() => {
+      document.documentElement.setAttribute('data-theme', next);
+      flushSync(() => setTheme(next));
+    });
+  }, []);
+
   const onUnsupported = useCallback(() => setFieldOk(false), []);
   const openResume = useCallback(() => setResumeOpen(true), []);
   const closeResume = useCallback(() => setResumeOpen(false), []);
@@ -63,7 +77,7 @@ export default function App() {
         <Header
           activeSection={activeSection}
           theme={theme}
-          setTheme={setTheme}
+          setTheme={switchTheme}
           terminalOpen={terminalOpen}
           setTerminalOpen={setTerminalOpen}
           soundEnabled={soundEnabled}
@@ -75,7 +89,7 @@ export default function App() {
           isOpen={terminalOpen}
           onClose={closeTerminal}
           theme={theme}
-          setTheme={setTheme}
+          setTheme={switchTheme}
           onOpenResume={openResume}
         />
 

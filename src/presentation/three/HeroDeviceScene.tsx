@@ -10,12 +10,17 @@ extend({
   Mesh: THREE.Mesh,
   LineSegments: THREE.LineSegments,
   LineLoop: THREE.LineLoop,
+  Line: THREE.Line,
+  Points: THREE.Points,
   InstancedMesh: THREE.InstancedMesh,
 });
 
 // A phone whose screen projects a small neural network forward in depth:
 // "from the phone app to the model behind it". Pulses (magenta, the model at
 // work) travel layer to layer and light up the nodes they reach.
+// The phone turns a full 360 inside three electron orbits, and a swarm of
+// square nanobots circles it, then lands on the screen row by row, top to
+// bottom: the app assembled the same way the page re-renders.
 // Lazy-loaded; everything here stays out of the main bundle.
 
 const PHONE = { w: 1.5, h: 3.0, d: 0.14, r: 0.24 };
@@ -28,8 +33,24 @@ const LAYERS = [
 ];
 const PULSES = 7;
 const BASE_ROT = { x: -0.1, y: -0.4 };
-/** Bounds the camera fits to, with room for the sway. */
-const FIT = { w: 2.1, h: 3.4 };
+/** Bounds the camera fits to: the orbits, which reach past the phone. */
+const FIT = { w: 2.55, h: 3.55 };
+/** Seconds per full turn of the phone. */
+const TURN = 24;
+
+/** Orbits are nearly edge-on circles: `tilt` flattens each to an ellipse, `roll` sets its axis. */
+const ORBIT = { r: 1.38, tilt: 1.08, segments: 96 };
+const ELECTRONS = [
+  { roll: Math.PI / 2, period: 3.4, phase: 0 },
+  { roll: (60 * Math.PI) / 180, period: 4.3, phase: 2.1 },
+  { roll: (120 * Math.PI) / 180, period: 5.1, phase: 4.2 },
+];
+const TAIL = { points: 18, arc: 1.1 };
+
+/** Screen grid the nanobots assemble into. */
+const GRID = { cols: 9, rows: 19, w: 1.08, h: 2.46 };
+/** Seconds per assemble/disperse cycle. */
+const BUILD = 10;
 
 type Palette = { ink: string; signal: string; dream: string; surface: string; ground: string };
 
@@ -105,6 +126,80 @@ const buildNetwork = () => {
 
 const pick = <T,>(arr: T[]) => arr[(Math.random() * arr.length) | 0];
 
+// Nanobots run entirely on the GPU: each one's orbit and its screen cell are
+// attributes, and the vertex shader places it from the clock alone.
+const BOT_VERT = `
+attribute vec4 aOrbit;
+attribute vec4 aCell;
+uniform float uTime;
+uniform float uSize;
+uniform float uScreenZ;
+varying float vBuild;
+
+void main() {
+  float a = aOrbit.z + uTime * aOrbit.w;
+  vec3 orbit = vec3(cos(a) * aOrbit.x, aOrbit.y + sin(uTime * 0.8 + aOrbit.z * 3.0) * 0.06, sin(a) * aOrbit.x);
+  float w = fract(uTime / ${BUILD.toFixed(1)} - aCell.z * 0.22);
+  float build = aCell.w * smoothstep(0.04, 0.26, w) * (1.0 - smoothstep(0.6, 0.8, w));
+  vec3 p = mix(orbit, vec3(aCell.xy, uScreenZ), build);
+  p.z += sin(build * 3.14159) * 0.45;
+  vec4 mv = modelViewMatrix * vec4(p, 1.0);
+  gl_Position = projectionMatrix * mv;
+  gl_PointSize = uSize * (9.0 / -mv.z) * (1.0 + build * 0.5);
+  vBuild = build;
+}
+`;
+
+const BOT_FRAG = `
+uniform vec3 uColor;
+uniform float uOpacity;
+varying float vBuild;
+void main() {
+  gl_FragColor = vec4(uColor, uOpacity * mix(0.5, 1.0, vBuild));
+}
+`;
+
+const buildBots = (n: number) => {
+  const orbit = new Float32Array(n * 4);
+  const cell = new Float32Array(n * 4);
+  const cells = Array.from({ length: GRID.cols * GRID.rows }, (_, i) => i).sort(() => Math.random() - 0.5);
+  const cw = GRID.w / GRID.cols;
+  const ch = GRID.h / GRID.rows;
+  for (let i = 0; i < n; i++) {
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    orbit.set([0.98 + Math.random() * 0.5, (Math.random() * 2 - 1) * 1.45, Math.random() * Math.PI * 2, dir * (0.25 + Math.random() * 0.35)], i * 4);
+    // Two in three bots build; the rest keep circling.
+    const c = cells[i];
+    if (c !== undefined && i % 3 !== 2) {
+      const col = c % GRID.cols;
+      const row = (c / GRID.cols) | 0;
+      // Delay by row so the screen fills from the top, like a scan.
+      cell.set([-GRID.w / 2 + cw * (col + 0.5), GRID.h / 2 - ch * (row + 0.5), row / GRID.rows, 1], i * 4);
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  // Positions come from the shader; this attribute only sizes the draw.
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  g.setAttribute('aOrbit', new THREE.BufferAttribute(orbit, 4));
+  g.setAttribute('aCell', new THREE.BufferAttribute(cell, 4));
+  return g;
+};
+
+const ringGeometry = () =>
+  new THREE.BufferGeometry().setFromPoints(
+    Array.from({ length: ORBIT.segments }, (_, i) => {
+      const a = (i / ORBIT.segments) * Math.PI * 2;
+      return new THREE.Vector3(Math.cos(a) * ORBIT.r, Math.sin(a) * ORBIT.r, 0);
+    }),
+  );
+
+const tailGeometry = () => {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TAIL.points * 3), 3));
+  g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(TAIL.points * 4), 4));
+  return g;
+};
+
 interface DeviceProps {
   palette: Palette;
   onSlow: () => void;
@@ -113,6 +208,10 @@ interface DeviceProps {
 
 const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
   const group = useRef<THREE.Group>(null);
+  const spin = useRef<THREE.Group>(null);
+  const atom = useRef<THREE.Group>(null);
+  const electronMeshes = useRef<(THREE.Mesh | null)[]>([]);
+  const clock = useRef(0);
   const nodeMesh = useRef<THREE.InstancedMesh>(null);
   const pulseMesh = useRef<THREE.InstancedMesh>(null);
   const pointer = useRef({ x: 0, y: 0 });
@@ -134,17 +233,23 @@ const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
       homeBar: outline(roundedRect(0.42, 0.02, 0.01), PHONE.d / 2 + 0.004).translate(0, -1.3, 0),
       node: new THREE.IcosahedronGeometry(0.045, 1),
       pulse: new THREE.IcosahedronGeometry(0.03, 1),
+      electron: new THREE.IcosahedronGeometry(0.05, 1),
+      ring: ringGeometry(),
+      bots: buildBots(window.innerWidth < 768 ? 120 : 170),
       net: buildNetwork(),
     };
   }, []);
+
+  const tails = useMemo(() => ELECTRONS.map(tailGeometry), []);
 
   useEffect(
     () => () => {
       const { net, ...rest } = geo;
       (Object.values(rest) as THREE.BufferGeometry[]).forEach((g) => g.dispose());
       net.lines.dispose();
+      tails.forEach((g) => g.dispose());
     },
-    [geo],
+    [geo, tails],
   );
 
   const mats = useMemo(
@@ -156,6 +261,22 @@ const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
       wire: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.32, depthWrite: false }),
       node: new THREE.MeshBasicMaterial(),
       pulse: new THREE.MeshBasicMaterial(),
+      orbit: new THREE.LineBasicMaterial({ transparent: true, opacity: 0.26, depthWrite: false }),
+      electron: new THREE.MeshBasicMaterial(),
+      tail: new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false }),
+      bots: new THREE.ShaderMaterial({
+        vertexShader: BOT_VERT,
+        fragmentShader: BOT_FRAG,
+        transparent: true,
+        depthWrite: false,
+        uniforms: {
+          uTime: { value: 0 },
+          uSize: { value: 2.4 * Math.min(window.devicePixelRatio || 1, 1.5) },
+          uScreenZ: { value: PHONE.d / 2 + 0.012 },
+          uColor: { value: new THREE.Color() },
+          uOpacity: { value: 0.9 },
+        },
+      }),
     }),
     [],
   );
@@ -170,7 +291,17 @@ const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
     mats.wire.color.set(palette.signal);
     mats.node.color.set(palette.signal);
     mats.pulse.color.set(palette.dream);
-  }, [mats, palette]);
+    mats.orbit.color.set(palette.ink);
+    mats.electron.color.set(palette.signal);
+    (mats.bots.uniforms.uColor.value as THREE.Color).set(palette.signal);
+    // Tails fade from the electron's colour to nothing.
+    const c = new THREE.Color(palette.signal);
+    tails.forEach((g) => {
+      const col = g.getAttribute('color') as THREE.BufferAttribute;
+      for (let j = 0; j < TAIL.points; j++) col.setXYZW(j, c.r, c.g, c.b, Math.pow(1 - j / (TAIL.points - 1), 1.6) * 0.9);
+      col.needsUpdate = true;
+    });
+  }, [mats, palette, tails]);
 
   // Fine pointers tilt the device a little; touch devices just get the idle sway.
   useEffect(() => {
@@ -218,13 +349,32 @@ const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
     }
 
     const dt = Math.min(rawDt, 1 / 20);
-    const t = state.clock.elapsedTime;
+    // Own clock, advanced only while rendering, so a paused scene resumes where it left off.
+    clock.current += dt;
+    const t = clock.current;
     const k = Math.min(1, dt * 3);
-    const ty = BASE_ROT.y + Math.sin(t * 0.45) * 0.2 + pointer.current.x * 0.3;
+    // The rig takes the pointer and a slow nod; the turn itself lives on `spin`.
+    const ty = pointer.current.x * 0.3;
     const tx = BASE_ROT.x + Math.sin(t * 0.33) * 0.05 + pointer.current.y * 0.14;
     g.rotation.y += (ty - g.rotation.y) * k;
     g.rotation.x += (tx - g.rotation.x) * k;
     g.position.y = Math.sin(t * 0.9) * 0.04;
+
+    if (spin.current) spin.current.rotation.y = BASE_ROT.y + (t / TURN) * Math.PI * 2;
+    // The orbits sway instead of following the turn, so the phone visibly passes through them.
+    if (atom.current) atom.current.rotation.y = Math.sin(t * 0.21) * 0.32;
+
+    ELECTRONS.forEach((e, i) => {
+      const head = e.phase + (t / e.period) * Math.PI * 2;
+      electronMeshes.current[i]?.position.set(Math.cos(head) * ORBIT.r, Math.sin(head) * ORBIT.r, 0);
+      const pos = tails[i].getAttribute('position') as THREE.BufferAttribute;
+      for (let j = 0; j < TAIL.points; j++) {
+        const a = head - (j / (TAIL.points - 1)) * TAIL.arc;
+        pos.setXYZ(j, Math.cos(a) * ORBIT.r, Math.sin(a) * ORBIT.r, 0);
+      }
+      pos.needsUpdate = true;
+    });
+    mats.bots.uniforms.uTime.value = t;
 
     const { net } = geo;
     for (let i = 0; i < PULSES; i++) {
@@ -258,16 +408,36 @@ const Device: React.FC<DeviceProps> = ({ palette, onSlow, onReady }) => {
   });
 
   return (
-    <group ref={group} rotation={[BASE_ROT.x, BASE_ROT.y, 0]}>
-      <mesh geometry={geo.body} material={mats.body} />
-      <lineSegments geometry={geo.bodyEdges} material={mats.edge} />
-      <mesh geometry={geo.screen} material={mats.screen} />
-      <lineLoop geometry={geo.screenEdge} material={mats.faint} />
-      <lineLoop geometry={geo.island} material={mats.edge} />
-      <lineLoop geometry={geo.homeBar} material={mats.faint} />
-      <lineSegments geometry={geo.net.lines} material={mats.wire} />
-      <instancedMesh ref={nodeMesh} args={[geo.node, mats.node, geo.net.nodes.length]} />
-      <instancedMesh ref={pulseMesh} args={[geo.pulse, mats.pulse, PULSES]} frustumCulled={false} />
+    <group ref={group} rotation={[BASE_ROT.x, 0, 0]}>
+      <group ref={spin} rotation={[0, BASE_ROT.y, 0]}>
+        <mesh geometry={geo.body} material={mats.body} />
+        <lineSegments geometry={geo.bodyEdges} material={mats.edge} />
+        <mesh geometry={geo.screen} material={mats.screen} />
+        <lineLoop geometry={geo.screenEdge} material={mats.faint} />
+        <lineLoop geometry={geo.island} material={mats.edge} />
+        <lineLoop geometry={geo.homeBar} material={mats.faint} />
+        <lineSegments geometry={geo.net.lines} material={mats.wire} />
+        <instancedMesh ref={nodeMesh} args={[geo.node, mats.node, geo.net.nodes.length]} />
+        <instancedMesh ref={pulseMesh} args={[geo.pulse, mats.pulse, PULSES]} frustumCulled={false} />
+        <points geometry={geo.bots} material={mats.bots} frustumCulled={false} />
+      </group>
+      <group ref={atom}>
+        {ELECTRONS.map((e, i) => (
+          <group key={i} rotation={[0, 0, e.roll]}>
+            <group rotation={[ORBIT.tilt, 0, 0]}>
+              <lineLoop geometry={geo.ring} material={mats.orbit} />
+              <line geometry={tails[i]} material={mats.tail} frustumCulled={false} />
+              <mesh
+                ref={(m) => {
+                  electronMeshes.current[i] = m;
+                }}
+                geometry={geo.electron}
+                material={mats.electron}
+              />
+            </group>
+          </group>
+        ))}
+      </group>
     </group>
   );
 };

@@ -1,4 +1,6 @@
-import { bust, device, helix, neuralLattice, portal, portraitFromImage, seeds, Formation } from './formations';
+import { brain, bust, device, helix, portal, portraitFromImage, seeds, Formation, FORMATION_NAMES } from './formations';
+
+const BRAIN = FORMATION_NAMES.indexOf('brain');
 
 // One persistent point field behind the page. Each section owns a "stage"
 // element ([data-stage="i"]); the field anchors formation i to stage i and,
@@ -8,11 +10,15 @@ const VERT = `
 attribute vec4 aFrom;
 attribute vec4 aTo;
 attribute vec4 aSeed;
+attribute vec4 aRole;
 uniform float uMix;
 uniform float uNoise;
 uniform float uTime;
 uniform float uDrift;
-uniform float uRot;
+uniform float uRotFrom;
+uniform float uRotTo;
+uniform vec2 uActSide;
+uniform float uPulse;
 uniform vec2 uTilt;
 uniform vec2 uRes;
 uniform vec4 uFromBox;
@@ -20,6 +26,32 @@ uniform vec4 uToBox;
 uniform float uSize;
 varying float vShade;
 varying float vDream;
+varying float vGlow;
+
+// Brain activity (only while the brain formation is on screen). Returns
+// (shade multiplier, added light): pulses run along wired lanes, nodes flash
+// when one arrives and twinkle otherwise, rays fade in and out.
+vec2 brainLight() {
+  float kind = aRole.x;
+  if (kind < 0.5) return vec2(1.0, 0.0);
+  float seed = abs(aRole.w);
+  float refl = aRole.w < 0.0 ? 0.3 : 1.0;
+  float pos = fract(uTime / 4.0 + aRole.z) * (4.0 / 2.6);
+  if (kind < 1.5) {
+    float twinkle = 0.15 * (0.5 + 0.5 * sin(uTime * (1.3 + seed * 2.0) + seed * 40.0));
+    float flash = 0.0;
+    if (aRole.y >= 0.0 && pos > aRole.y) flash = exp(-(pos - aRole.y) * 9.0) * (0.75 + 0.25 * sin(uTime * 47.0 + seed * 90.0));
+    return vec2(1.0, (0.15 + (twinkle + flash * 0.9) * uPulse) * refl);
+  }
+  if (kind < 2.5) {
+    if (aRole.y < 0.0) return vec2(1.0, 0.0);
+    float d = (pos - aRole.y) * 16.0;
+    return vec2(1.0, exp(-d * d) * 0.8 * uPulse * refl);
+  }
+  float fade = pow(0.5 + 0.5 * sin(uTime * 0.7 + aRole.z * 6.283), 2.0);
+  float shimmer = 0.65 + 0.35 * sin(aRole.y * 12.0 - uTime * 3.0);
+  return vec2(mix(0.35, fade * shimmer, uPulse), 0.0);
+}
 
 mat3 rotY(float a) { float c = cos(a), s = sin(a); return mat3(c, 0.0, -s, 0.0, 1.0, 0.0, s, 0.0, c); }
 mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c); }
@@ -27,11 +59,17 @@ mat3 rotX(float a) { float c = cos(a), s = sin(a); return mat3(1.0, 0.0, 0.0, 0.
 void main() {
   float r = aSeed.w;
   float lt = smoothstep(r * 0.35, r * 0.35 + 0.65, uMix);
-  vec3 p = mix(aFrom.xyz, aTo.xyz, lt);
+  // Each side turns on its own: the brain spins, the others sway.
+  vec3 p = mix(rotY(uRotFrom) * aFrom.xyz, rotY(uRotTo) * aTo.xyz, lt);
   float shade = mix(aFrom.w, aTo.w, lt);
 
+  float act = mix(uActSide.x, uActSide.y, lt);
+  vec2 light = brainLight();
+  float glow = light.y * act;
+  shade = shade * mix(1.0, light.x, act) + glow * 0.7;
+
   p += uDrift * 0.01 * vec3(sin(uTime * 0.7 + r * 40.0), cos(uTime * 0.6 + r * 31.0), sin(uTime * 0.5 + r * 17.0));
-  p = rotY(uRot + uTilt.x) * rotX(uTilt.y) * p;
+  p = rotY(uTilt.x) * rotX(uTilt.y) * p;
 
   float persp = 3.2 / (3.2 - p.z);
   vec4 box = mix(uFromBox, uToBox, lt);
@@ -45,9 +83,10 @@ void main() {
 
   vec2 ndc = px / uRes * 2.0 - 1.0;
   gl_Position = vec4(ndc.x, -ndc.y, 0.0, 1.0);
-  gl_PointSize = uSize * persp * (1.0 + n * 3.2 * aSeed.z * aSeed.z * aSeed.z);
+  gl_PointSize = uSize * persp * (1.0 + n * 3.2 * aSeed.z * aSeed.z * aSeed.z) * (1.0 + glow * 0.6 * (1.0 - n));
   vShade = shade;
   vDream = n;
+  vGlow = glow * (1.0 - n);
 }
 `;
 
@@ -56,14 +95,17 @@ precision mediump float;
 uniform vec3 uSignal;
 uniform vec3 uDreamC;
 uniform float uAlpha;
+uniform float uGlowWhite;
 varying float vShade;
 varying float vDream;
+varying float vGlow;
 void main() {
   vec2 c = gl_PointCoord - 0.5;
   float d = dot(c, c);
   if (d > 0.25) discard;
   float a = smoothstep(0.25, 0.02, d);
   vec3 col = mix(uSignal, uDreamC, clamp(vDream * 1.4, 0.0, 1.0));
+  col = mix(col, vec3(1.0), clamp(vGlow, 0.0, 1.0) * uGlowWhite);
   gl_FragColor = vec4(col, a * uAlpha * mix(vShade, 0.5, vDream));
 }
 `;
@@ -82,6 +124,7 @@ export class LatentField {
   private program: WebGLProgram;
   private buffers: WebGLBuffer[] = [];
   private seedBuffer: WebGLBuffer;
+  private roleBuffer: WebGLBuffer;
   private loc: Record<string, number> = {};
   private uni: Record<string, WebGLUniformLocation | null> = {};
   private n: number;
@@ -123,14 +166,19 @@ export class LatentField {
 
     this.program = this.link(VERT, FRAG);
     gl.useProgram(this.program);
-    for (const a of ['aFrom', 'aTo', 'aSeed']) this.loc[a] = gl.getAttribLocation(this.program, a);
-    for (const u of ['uMix', 'uNoise', 'uTime', 'uDrift', 'uRot', 'uTilt', 'uRes', 'uFromBox', 'uToBox', 'uSize', 'uSignal', 'uDreamC', 'uAlpha']) {
+    for (const a of ['aFrom', 'aTo', 'aSeed', 'aRole']) this.loc[a] = gl.getAttribLocation(this.program, a);
+    for (const u of [
+      'uMix', 'uNoise', 'uTime', 'uDrift', 'uRotFrom', 'uRotTo', 'uActSide', 'uPulse', 'uTilt', 'uRes',
+      'uFromBox', 'uToBox', 'uSize', 'uSignal', 'uDreamC', 'uAlpha', 'uGlowWhite',
+    ]) {
       this.uni[u] = gl.getUniformLocation(this.program, u);
     }
 
-    const formations: Formation[] = [bust(this.n), helix(this.n), neuralLattice(this.n), device(this.n), portal(this.n)];
+    const cell = brain(this.n);
+    const formations: Formation[] = [bust(this.n), helix(this.n), cell.formation, device(this.n), portal(this.n)];
     this.buffers = formations.map((f) => this.upload(f));
     this.seedBuffer = this.upload(seeds(this.n));
+    this.roleBuffer = this.upload(cell.roles);
 
     this.readTheme();
     this.themeObserver = new MutationObserver(() => this.readTheme());
@@ -307,6 +355,8 @@ export class LatentField {
 
     const noise = Math.max(intro, this.reduced ? 0 : Math.pow(Math.sin(Math.PI * t), 1.15));
     const sway = this.reduced ? -0.22 : Math.sin(time * 0.22) * 0.38;
+    // The brain turns all the way round, slowly (about 37s per turn); reduced motion holds a three-quarter side view.
+    const rotOf = (k: number) => (k === BRAIN ? (this.reduced ? 1.1 : time * 0.17) : sway);
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -319,12 +369,17 @@ export class LatentField {
     this.bind('aFrom', this.buffers[from] ?? this.buffers[0]);
     this.bind('aTo', this.buffers[to] ?? this.buffers[0]);
     this.bind('aSeed', this.seedBuffer);
+    this.bind('aRole', this.roleBuffer);
 
     gl.uniform1f(this.uni.uMix, t);
     gl.uniform1f(this.uni.uNoise, noise);
     gl.uniform1f(this.uni.uTime, this.reduced ? 0 : time);
     gl.uniform1f(this.uni.uDrift, this.reduced ? 0 : 1);
-    gl.uniform1f(this.uni.uRot, sway);
+    gl.uniform1f(this.uni.uRotFrom, rotOf(from));
+    gl.uniform1f(this.uni.uRotTo, rotOf(to));
+    gl.uniform2f(this.uni.uActSide, from === BRAIN ? 1 : 0, to === BRAIN ? 1 : 0);
+    gl.uniform1f(this.uni.uPulse, this.reduced ? 0 : 1);
+    gl.uniform1f(this.uni.uGlowWhite, this.lightTheme ? 0 : 0.2);
     gl.uniform2f(this.uni.uTilt, this.reduced ? 0 : this.pointer.x, this.reduced ? 0.08 : this.pointer.y + 0.08);
     gl.uniform2f(this.uni.uRes, gl.canvas.width, gl.canvas.height);
     gl.uniform4f(this.uni.uFromBox, fromBox[0], fromBox[1], fromBox[2], 0);

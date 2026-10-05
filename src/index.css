@@ -158,6 +158,59 @@ p { text-wrap: pretty; }
   transform: perspective(1100px) translate3d(0, 48px, -140px) rotateX(22deg) rotateZ(-1.5deg);
 }
 
+/* Phones: a shorter rise and less blur, so a screenful of reveals stays cheap. */
+@media (max-width: 767px) {
+  .js-reveal [data-reveal]:not(.is-in):not([data-reveal="shard"]) {
+    filter: blur(6px);
+    transform: perspective(900px) translate3d(0, 20px, -40px) rotateX(8deg);
+  }
+}
+
+/* ---------- Section handoff: scroll-linked, compositor-only ----------
+   Scrolling is sampling. The boundary into each section is drawn left to
+   right as it rises, and content sinks back into depth as it leaves the top.
+   No support or reduced motion: the static hairline and plain reveals stay. */
+@keyframes handoff-scan {
+  from { transform: scaleX(0); opacity: 1; }
+  75% { transform: scaleX(1); opacity: 1; }
+  to { transform: scaleX(1); opacity: 0; }
+}
+@keyframes recede {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0.12; transform: perspective(900px) translate3d(0, -20px, -90px) rotateX(-9deg); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Timed by the section itself (the 1px line would finish instantly):
+       drawn over the first 55vh of scroll after its top edge appears. */
+    section[id^="section-"].border-t {
+      view-timeline: --handoff block;
+    }
+    section[id^="section-"].border-t::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: var(--signal);
+      transform-origin: left;
+      pointer-events: none;
+      animation: handoff-scan linear both;
+      animation-timeline: --handoff;
+      animation-range: cover 0px cover 55vh;
+    }
+    /* Only across the last 30vh before an item's end edge leaves the top,
+       so nothing being read fades; a focused form never does. Fill is none
+       so the reveal transition below the fold is never overridden. */
+    .js-reveal [data-reveal].is-in:not(:focus-within) {
+      animation: recede linear none;
+      animation-timeline: view();
+      animation-range: cover calc(100% - 30vh) cover 100%;
+    }
+  }
+}
+
 /* Project shard tilt (pointer-driven on fine pointers) */
 .shard-frame {
   transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
@@ -178,6 +231,27 @@ p { text-wrap: pretty; }
   from { opacity: 0; transform: translate3d(0, 14px, 0); filter: blur(6px); }
 }
 .hero-in { animation: hero-in 900ms var(--ease-out-expo) backwards; animation-delay: calc(120ms + var(--d, 0) * 90ms); }
+
+/* Theme switch: the frame is re-rendered in the new palette, one scan pass
+   top to bottom. The old frame holds still underneath; no crossfade. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  animation: rescan 640ms var(--ease-out-expo);
+}
+@keyframes rescan {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+/* Small state confirmations: resolve out of blur, no travel. */
+@keyframes resolve-in {
+  from { opacity: 0; filter: blur(4px); }
+}
+.resolve-in { animation: resolve-in 220ms var(--ease-out-expo); }
 
 @keyframes blink { 50% { opacity: 0; } }
 .caret-blink { animation: blink 1.05s steps(1) infinite; }

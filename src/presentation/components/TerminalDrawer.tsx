@@ -262,7 +262,7 @@ export const TerminalDrawer: React.FC<TerminalDrawerProps> = ({ isOpen, onClose,
           aria-label={k.title}
           initial={{ opacity: 0, y: -16, filter: 'blur(8px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
+          exit={{ opacity: 0, y: -8, filter: 'blur(6px)', transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-x-0 top-16 z-50 flex max-h-[70svh] flex-col border-b border-signal/50 bg-ground font-mono text-xs lg:left-16"
         >

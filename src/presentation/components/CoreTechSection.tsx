@@ -12,6 +12,7 @@ import {
 } from 'react-icons/si';
 import { DenoiseText } from './DenoiseText';
 import { Stage } from './Stage';
+import { BRAIN_NODE_COUNT } from '../latent/formations';
 
 const skillIcons: Record<string, React.ElementType> = {
   'React Native': FaReact,
@@ -59,7 +60,7 @@ export const CoreTechSection: React.FC<{ theme: ThemeMode }> = () => {
         <Stage
           index={2}
           className="mx-4 h-[42svh] min-h-[280px] sm:mx-6 lg:sticky lg:top-24 lg:mx-0 lg:h-[calc(100svh-8rem)]"
-          note="4 layers / 24 nodes"
+          note={`mesh / ${BRAIN_NODE_COUNT} nodes`}
         />
       </div>
 

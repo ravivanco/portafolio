@@ -128,7 +128,7 @@ components:
 
 **Creative North Star: "The Latent Field"**
 
-The page is a diffusion sampler rendering its author. One persistent WebGL point field sits behind the content and denoises into a different formation per section (portrait, helix, neural lattice, device, portal). Scrolling is sampling. Every other surface is quiet so the field can be the image: an ink-black ground, bone text, and one phosphor-cyan signal color doing almost all of the accent work.
+The page is a diffusion sampler rendering its author. One persistent WebGL point field sits behind the content and denoises into a different formation per section (portrait, helix, brain, device, portal). Scrolling is sampling. Every other surface is quiet so the field can be the image: an ink-black ground, bone text, and one phosphor-cyan signal color doing almost all of the accent work.
 
 The chrome is a HUD, not a dashboard. It uses 1px hairline rules, square corners, crosshair corner ticks on the stages where the field lands, and mono readouts that report what the model is doing (step counters, formation names, system status). Depth comes from the field and from content resolving out of blur. The system does not use shadows, glows or glass. Density is editorial. Prose sits at 15px in Geist with roomy line height. Structure comes from rules and columns, not boxes.
 

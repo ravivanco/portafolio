@@ -47,18 +47,25 @@ export const useActiveSection = () => {
   return active;
 };
 
-/** Adds .is-in to every [data-reveal] once it enters view. Re-scans on content changes. */
+/**
+ * Adds .is-in to every [data-reveal] once it enters view. Items that arrive
+ * together cascade in reading order (capped, so the last never waits long);
+ * one arriving alone resolves at once. Re-scans on content changes.
+ */
 export const useRevealObserver = (deps: unknown[] = []) => {
   useEffect(() => {
     document.documentElement.classList.add('js-reveal');
     const io = new IntersectionObserver(
       (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-in');
-            io.unobserve(e.target);
-          }
-        }
+        const arriving = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top || a.boundingClientRect.left - b.boundingClientRect.left);
+        arriving.forEach((e, i) => {
+          const el = e.target as HTMLElement;
+          el.style.setProperty('--d', String(Math.min(i, 5)));
+          el.classList.add('is-in');
+          io.unobserve(el);
+        });
       },
       { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
     );

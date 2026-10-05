@@ -3,7 +3,7 @@
 
 export type Formation = Float32Array;
 
-export const FORMATION_NAMES = ['portrait', 'helix', 'neural_lattice', 'device', 'portal'] as const;
+export const FORMATION_NAMES = ['portrait', 'helix', 'brain', 'device', 'portal'] as const;
 export type FormationName = (typeof FORMATION_NAMES)[number];
 
 const mulberry32 = (seed: number) => () => {
@@ -178,40 +178,214 @@ export function helix(n: number): Formation {
   return out;
 }
 
-/** Core tech: a four-layer neural network drawn as nodes and weighted edges. */
-export function neuralLattice(n: number): Formation {
-  const out = new Float32Array(n * 4);
+/** Point roles, read by the field shader: x = kind, y = path progress (-1 = none), z = lane phase, w = seed (negative = reflection). */
+export const ROLE_KIND = { other: 0, node: 1, edge: 2, ray: 3 } as const;
+/** Centre the rays radiate from (also the brain's centre). */
+export const BRAIN_CENTER: [number, number, number] = [0, 0.33, 0];
+const FLOOR_Y = -0.24;
+const REFLECT = 0.72;
+
+type V3 = [number, number, number];
+
+/**
+ * A low-poly brain as a graph: two hemispheres, a cerebellum and a stem,
+ * each vertex wired to its nearest neighbours. Pulse lanes are random walks
+ * through the graph; every vertex and edge on a lane knows when the pulse
+ * reaches it, so the shader can run light along the wires and flash nodes.
+ */
+const brainGraph = (() => {
   const rnd = mulberry32(23);
-  const layerX = [-0.92, -0.31, 0.31, 0.92];
-  const counts = [5, 8, 8, 3];
-  const nodes: [number, number, number][][] = layerX.map((x, li) => {
-    const c = counts[li];
-    return Array.from({ length: c }, (_, j) => {
-      const y = c === 1 ? 0 : ((j / (c - 1)) * 2 - 1) * (0.25 + c * 0.08);
-      const z = Math.sin(j * 1.7 + li) * 0.18;
-      return [x, y, z];
+  const verts: V3[] = [];
+  const group: number[] = [];
+  const fib = (count: number, cb: (d: V3) => void) => {
+    for (let i = 0; i < count; i++) {
+      const y = 1 - ((i + 0.5) / count) * 2;
+      const r = Math.sqrt(1 - y * y);
+      const a = i * 2.39996;
+      cb([Math.cos(a) * r, y, Math.sin(a) * r]);
+    }
+  };
+
+  // Hemispheres: ellipsoids with a flat medial face, flattened underside,
+  // a taller frontal lobe and a little radial jitter for the folds.
+  for (const h of [-1, 1]) {
+    fib(42, ([dx, dy, dz]) => {
+      const j = 1 + (rnd() - 0.5) * 0.08;
+      let x = dx * 0.36 * j;
+      let y = dy * 0.36 * j;
+      const z = dz * 0.62 * j;
+      if (dx * h < 0) x *= 0.4;
+      if (dy < 0) y *= 0.62;
+      if (dz > 0 && dy > 0) y += 0.06 * dz;
+      verts.push([h * 0.21 + x, y, z]);
+      group.push(h < 0 ? 0 : 1);
     });
+  }
+  // Cerebellum, tucked under the back.
+  fib(12, ([dx, dy, dz]) => {
+    verts.push([dx * 0.25, -0.22 + dy * 0.11, -0.4 + dz * 0.14]);
+    group.push(2);
   });
-  for (let i = 0; i < n; i++) {
-    if (rnd() < 0.26) {
-      const L = nodes[Math.floor(rnd() * nodes.length)];
-      const [x, y, z] = L[Math.floor(rnd() * L.length)];
-      put(out, i, x + gauss(rnd) * 0.03, y + gauss(rnd) * 0.03, z + gauss(rnd) * 0.03, 1);
-    } else {
-      const li = Math.floor(rnd() * (nodes.length - 1));
-      const a = nodes[li][Math.floor(rnd() * nodes[li].length)];
-      const b = nodes[li + 1][Math.floor(rnd() * nodes[li + 1].length)];
-      const t = rnd();
-      put(
-        out, i,
-        a[0] + (b[0] - a[0]) * t,
-        a[1] + (b[1] - a[1]) * t + gauss(rnd) * 0.004,
-        a[2] + (b[2] - a[2]) * t,
-        0.42 + 0.22 * Math.sin(t * Math.PI),
-      );
+  // Stem.
+  const stemStart = verts.length;
+  for (let k = 0; k < 4; k++) {
+    verts.push([0, -0.12 - k * 0.12, -0.18 - k * 0.025]);
+    group.push(3);
+  }
+
+  const edgeKeys = new Set<string>();
+  const edges: [number, number][] = [];
+  const link = (a: number, b: number) => {
+    const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+    if (a === b || edgeKeys.has(key)) return;
+    edgeKeys.add(key);
+    edges.push([a, b]);
+  };
+  const dist = (a: number, b: number) => Math.hypot(verts[a][0] - verts[b][0], verts[a][1] - verts[b][1], verts[a][2] - verts[b][2]);
+  const nearest = (i: number, pool: number[], k: number) =>
+    pool.filter((j) => j !== i).sort((a, b) => dist(i, a) - dist(i, b)).slice(0, k);
+
+  for (let g = 0; g < 3; g++) {
+    const pool = verts.map((_, i) => i).filter((i) => group[i] === g);
+    for (const i of pool) for (const j of nearest(i, pool, 4)) link(i, j);
+  }
+  // Corpus callosum: the closest medial pairs across the midline.
+  const left = verts.map((_, i) => i).filter((i) => group[i] === 0);
+  const right = verts.map((_, i) => i).filter((i) => group[i] === 1);
+  left
+    .map((i) => ({ i, j: nearest(i, right, 1)[0] }))
+    .sort((a, b) => dist(a.i, a.j) - dist(b.i, b.j))
+    .slice(0, 6)
+    .forEach(({ i, j }) => link(i, j));
+  for (let k = 0; k < 3; k++) link(stemStart + k, stemStart + k + 1);
+  for (const j of [...nearest(stemStart, left, 2), ...nearest(stemStart, right, 2)]) link(stemStart, j);
+  const cereb = verts.map((_, i) => i).filter((i) => group[i] === 2);
+  link(stemStart + 1, nearest(stemStart + 1, cereb, 1)[0]);
+
+  // Pulse lanes: short random walks, one step per edge.
+  const LANES = 12;
+  const STEPS = 7;
+  const adj = verts.map(() => [] as number[]);
+  edges.forEach(([a, b]) => {
+    adj[a].push(b);
+    adj[b].push(a);
+  });
+  const nodeLane = new Map<number, { s: number; phase: number }>();
+  const edgeLane = new Map<string, { from: number; s0: number; s1: number; phase: number }>();
+  for (let l = 0; l < LANES; l++) {
+    const phase = rnd();
+    let at = Math.floor(rnd() * verts.length);
+    const seen = new Set([at]);
+    if (!nodeLane.has(at)) nodeLane.set(at, { s: 0, phase });
+    for (let step = 0; step < STEPS; step++) {
+      const next = adj[at].filter((v) => !seen.has(v));
+      if (!next.length) break;
+      const to = next[Math.floor(rnd() * next.length)];
+      const key = at < to ? `${at}-${to}` : `${to}-${at}`;
+      if (!edgeLane.has(key)) edgeLane.set(key, { from: at, s0: step / STEPS, s1: (step + 1) / STEPS, phase });
+      if (!nodeLane.has(to)) nodeLane.set(to, { s: (step + 1) / STEPS, phase });
+      seen.add(to);
+      at = to;
     }
   }
-  return out;
+
+  const lengths = edges.map(([a, b]) => dist(a, b));
+  return { verts, edges, lengths, total: lengths.reduce((s, l) => s + l, 0), nodeLane, edgeLane };
+})();
+
+export const BRAIN_NODE_COUNT = brainGraph.verts.length;
+
+/** Core tech: a low-poly wireframe brain with light rays and a floor reflection. */
+export function brain(n: number): { formation: Formation; roles: Float32Array } {
+  const out = new Float32Array(n * 4);
+  const roles = new Float32Array(n * 4);
+  const rnd = mulberry32(29);
+  const { verts, edges, lengths, total, nodeLane, edgeLane } = brainGraph;
+  const [cx, cy, cz] = BRAIN_CENTER;
+
+  const RAYS = 28;
+  const rays = Array.from({ length: RAYS }, () => {
+    const a = rnd() * Math.PI * 2;
+    const dy = -0.15 + rnd() * 0.75;
+    const k = Math.sqrt(1 - dy * dy);
+    const d: V3 = [Math.cos(a) * k, dy, Math.sin(a) * k];
+    const r0 = 0.74 + rnd() * 0.08;
+    const r1 = Math.min(r0 + 0.2 + rnd() * 0.25, dy > 0 ? (1.05 - cy) / dy : 2);
+    return { d, r0, r1, phase: rnd() };
+  });
+
+  const role = (i: number, kind: number, s: number, phase: number, seed: number) => {
+    roles.set([kind, s, phase, seed], i * 4);
+  };
+
+  // One point on the mesh (a node or a wire); mirrored ones form the reflection.
+  const meshPoint = (i: number, mirror: boolean) => {
+    const sign = mirror ? -1 : 1;
+    let x: number;
+    let y: number;
+    let z: number;
+    let shade: number;
+    if (rnd() < 0.15) {
+      const v = Math.floor(rnd() * verts.length);
+      const [vx, vy, vz] = verts[v];
+      x = vx + gauss(rnd) * 0.012;
+      y = vy + gauss(rnd) * 0.012;
+      z = vz + gauss(rnd) * 0.012;
+      shade = 1;
+      const lane = nodeLane.get(v);
+      role(i, ROLE_KIND.node, lane ? lane.s : -1, lane ? lane.phase : 0, sign * (0.05 + rnd() * 0.95));
+    } else {
+      let pick = rnd() * total;
+      let e = 0;
+      while (e < edges.length - 1 && pick > lengths[e]) pick -= lengths[e++];
+      const [a, b] = edges[e];
+      const t = rnd();
+      const A = verts[a];
+      const B = verts[b];
+      x = A[0] + (B[0] - A[0]) * t + gauss(rnd) * 0.002;
+      y = A[1] + (B[1] - A[1]) * t + gauss(rnd) * 0.002;
+      z = A[2] + (B[2] - A[2]) * t;
+      shade = 0.75;
+      const lane = edgeLane.get(a < b ? `${a}-${b}` : `${b}-${a}`);
+      const along = lane ? (lane.from === a ? t : 1 - t) : 0;
+      role(i, ROLE_KIND.edge, lane ? lane.s0 + (lane.s1 - lane.s0) * along : -1, lane ? lane.phase : 0, sign * (0.05 + rnd() * 0.95));
+    }
+    y += cy;
+    if (mirror) {
+      // Mirrored across the floor, squashed, and fading with depth.
+      const depth = (y - FLOOR_Y) * REFLECT;
+      y = FLOOR_Y - depth;
+      shade *= 0.55 * Math.max(0, 1 - depth / 0.75);
+    }
+    put(out, i, x + cx, y, z + cz, shade);
+  };
+
+  for (let i = 0; i < n; i++) {
+    const r = rnd();
+    if (r < 0.64) {
+      meshPoint(i, false);
+    } else if (r < 0.84) {
+      meshPoint(i, true);
+    } else if (r < 0.94) {
+      const ray = rays[Math.floor(rnd() * RAYS)];
+      const t = rnd();
+      const rr = ray.r0 + (ray.r1 - ray.r0) * t;
+      put(out, i, cx + ray.d[0] * rr, cy + ray.d[1] * rr, cz + ray.d[2] * rr, 0.95 * (1 - t * 0.5));
+      role(i, ROLE_KIND.ray, t, ray.phase, 0.5);
+    } else if (r < 0.97) {
+      // The floor the reflection sits on: a faint ring.
+      const a = rnd() * Math.PI * 2;
+      const rr = 0.55 + gauss(rnd) * 0.03;
+      put(out, i, Math.cos(a) * rr, FLOOR_Y, Math.sin(a) * rr, 0.22);
+      role(i, ROLE_KIND.other, -1, 0, 0);
+    } else {
+      const a = rnd() * Math.PI * 2;
+      const rr = 0.5 + rnd() * 0.5;
+      put(out, i, Math.cos(a) * rr, rnd() * 2 - 1, Math.sin(a) * rr, 0.12);
+      role(i, ROLE_KIND.other, -1, 0, 0);
+    }
+  }
+  return { formation: out, roles };
 }
 
 /** Projects: a phone, with an app screen made of points. */

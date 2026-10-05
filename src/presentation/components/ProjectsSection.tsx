@@ -13,7 +13,13 @@ import { Stage } from './Stage';
 type Filter = 'all' | 'mobile' | 'ai' | 'fullstack';
 
 /** A project surfacing out of latent space; tilts toward a fine pointer. */
-const Shard: React.FC<{ project: Project; index: number; feature?: boolean; onOpen: () => void }> = ({ project, index, feature = false, onOpen }) => {
+const Shard: React.FC<{ project: Project; index: number; feature?: boolean; stagger?: boolean; onOpen: () => void }> = ({
+  project,
+  index,
+  feature = false,
+  stagger = false,
+  onOpen,
+}) => {
   const flip = !feature && index % 2 === 1;
   const { language } = useLanguage();
   const t = translations[language];
@@ -35,6 +41,7 @@ const Shard: React.FC<{ project: Project; index: number; feature?: boolean; onOp
   return (
     <article
       data-reveal="shard"
+      style={stagger ? ({ '--d': Math.min(index, 3) } as React.CSSProperties) : undefined}
       className={`border-t border-line pt-6 ${feature ? '' : 'md:grid md:grid-cols-12 md:items-start md:gap-8'}`}
     >
       <div className={feature ? '' : `md:col-span-5 ${flip ? 'md:order-2' : ''}`}>
@@ -83,10 +90,10 @@ const Shard: React.FC<{ project: Project; index: number; feature?: boolean; onOp
           id={`project-details-${project.id}`}
           type="button"
           onClick={onOpen}
-          className="inline-flex h-10 items-center gap-2 border border-line-strong px-3 text-sm font-semibold text-ink transition-colors duration-200 hover:border-signal hover:text-signal"
+          className="group inline-flex h-10 items-center gap-2 border border-line-strong px-3 text-sm font-semibold text-ink transition-colors duration-200 hover:border-signal hover:text-signal"
         >
           {t.ui.project_open}
-          <ArrowUpRight className="h-3.5 w-3.5" />
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
         </button>
         {project.githubUrl && (
           <a
@@ -111,6 +118,8 @@ export const ProjectsSection: React.FC<{ theme: ThemeMode }> = () => {
   const t = translations[language];
   const { PROJECTS } = useResumeData();
   const [filter, setFilter] = useState<Filter>('all');
+  // After the first filter change, shards re-surface as one staggered list instead of one by one on scroll.
+  const [resampled, setResampled] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -168,14 +177,24 @@ export const ProjectsSection: React.FC<{ theme: ThemeMode }> = () => {
                 type="button"
                 aria-selected={filter === tab.id}
                 onClick={() => {
+                  if (tab.id === filter) return;
                   soundFx.playClick();
+                  setResampled(true);
                   setFilter(tab.id);
                 }}
-                className={`h-10 shrink-0 whitespace-nowrap border-b px-3 transition-colors duration-200 ${
-                  filter === tab.id ? 'border-signal text-signal' : 'border-line text-muted hover:text-ink'
+                className={`relative h-10 shrink-0 whitespace-nowrap border-b border-line px-3 transition-colors duration-200 ${
+                  filter === tab.id ? 'text-signal' : 'text-muted hover:text-ink'
                 }`}
               >
                 {tab.label}
+                {filter === tab.id && (
+                  <motion.span
+                    layoutId="project-filter-bar"
+                    aria-hidden="true"
+                    transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute inset-x-0 -bottom-px h-px bg-signal"
+                  />
+                )}
               </button>
             ))}
           </div>
@@ -184,20 +203,28 @@ export const ProjectsSection: React.FC<{ theme: ThemeMode }> = () => {
           </p>
         </div>
 
-        <div className="mt-8 space-y-14">
-          {filtered.map((project, idx) => (
-            <Shard
-              key={project.id}
-              project={project}
-              index={idx}
-              feature={!!project.hasAiDemo}
-              onOpen={() => {
-                soundFx.playClick();
-                setSelected(project);
-              }}
-            />
-          ))}
-        </div>
+        {/* A filter change dissolves the old list, then the new one surfaces through the shard reveal. */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={filter}
+            exit={{ opacity: 0, filter: 'blur(8px)', transition: { duration: 0.18, ease: [0.4, 0, 1, 1] } }}
+            className="mt-8 space-y-14"
+          >
+            {filtered.map((project, idx) => (
+              <Shard
+                key={project.id}
+                project={project}
+                index={idx}
+                feature={!!project.hasAiDemo}
+                stagger={resampled}
+                onOpen={() => {
+                  soundFx.playClick();
+                  setSelected(project);
+                }}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       <AnimatePresence>
@@ -206,7 +233,7 @@ export const ProjectsSection: React.FC<{ theme: ThemeMode }> = () => {
             key="project-modal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
             className="fixed inset-0 z-50 flex items-end justify-center bg-ground/85 sm:items-center sm:p-6"
             onClick={() => setSelected(null)}
           >
@@ -216,7 +243,7 @@ export const ProjectsSection: React.FC<{ theme: ThemeMode }> = () => {
               aria-labelledby="project-modal-title"
               initial={{ opacity: 0, y: 40, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: 24, filter: 'blur(6px)' }}
+              exit={{ opacity: 0, y: 16, filter: 'blur(6px)', transition: { duration: 0.2, ease: [0.4, 0, 1, 1] } }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               onClick={(e) => e.stopPropagation()}
               className="max-h-[92svh] w-full max-w-2xl overflow-y-auto border border-line-strong bg-surface"
